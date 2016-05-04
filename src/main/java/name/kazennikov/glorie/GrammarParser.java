@@ -23,8 +23,8 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     URL baseURL;
     ParserContext parserContext;
     String source;
-    String defaultImports = "import name.kazennikov.glr.*;\n" +
-            "import name.kazennikov.glr.filters.*;\n" +
+    String defaultImports = "import name.kazennikov.glorie.*;\n" +
+            "import name.kazennikov.glorie.filters.*;\n" +
             "import groovy.lang.*;\n" +
             "import java.lang.*;\n" +
             "import gate.*;\n";

@@ -52,12 +52,12 @@ public class CompiledGrammar {
     }
 
 
-    public static final String DEFAULT_IMPORTS = "import name.kazennikov.glr.RHSAction;\n"
-            + "import name.kazennikov.glr.SymbolSpan;\n"
-            + "import name.kazennikov.glr.GLRParser;\n"
-            + "import name.kazennikov.glr.CompiledGrammar;\n"
+    public static final String DEFAULT_IMPORTS = "import " + RHSAction.class.getName() + ";\n"
+            + "import " + SymbolSpan.class.getName() + ";\n"
+            + "import " + GLRParser.class.getName() + ";\n"
+            + "import " + CompiledGrammar.class.getName() + ";\n"
             + "import gate.*;\n"
-            + "import name.kazennikov.glr.*;\n"
+            + "import name.kazennikov.glorie.*;\n"
             + "\n\n";
 
 

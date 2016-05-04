@@ -12,6 +12,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD})
-@GroovyASTTransformationClass("name.kazennikov.glr.groovy.AttrAssignementAST")
+@GroovyASTTransformationClass("name.kazennikov.glorie.groovy.AttrAssignementAST")
 public @interface AttrAssignement {
 }
