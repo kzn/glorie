@@ -1,6 +1,6 @@
 package name.kazennikov.glorie;
 
-import name.kazennikov.glorie.groovy.AttrAssignement;
+import name.kazennikov.glorie.groovy.AttrAssignment;
 import name.kazennikov.logger.Logger;
 
 import java.io.File;
@@ -125,7 +125,7 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 		for(String binding : g.bindings()) {
 			source.append("\t").append("protected ").append(SymbolSpan.class.getName()).append(" ").append(binding).append(";\n");
 		}
-		source.append("@" + AttrAssignement.class.getName() + "\n");
+		source.append("@" + AttrAssignment.class.getName() + "\n");
 		source.append("public Object _exec() {\n");
 		source.append(sourceInfo.addBlock(source.toString(), src) + "\n");
 		source.append("}\n");

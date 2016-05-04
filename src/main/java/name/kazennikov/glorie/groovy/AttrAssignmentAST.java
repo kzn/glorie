@@ -37,7 +37,7 @@ import java.util.List;
  * @author Anton Kazennikov
  */
 @GroovyASTTransformation
-public class AttrAssignementAST implements ASTTransformation {
+public class AttrAssignmentAST implements ASTTransformation {
 
 	public static class AttrVisitor extends ClassCodeExpressionTransformer {
 		SourceUnit sourceUnit;
