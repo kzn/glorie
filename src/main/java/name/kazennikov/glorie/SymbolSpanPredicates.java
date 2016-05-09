@@ -5,10 +5,7 @@ import name.kazennikov.alphabet.Alphabet;
 import name.kazennikov.glorie.func.Evaluator;
 
 import java.lang.invoke.MethodHandle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -1206,6 +1203,45 @@ public class SymbolSpanPredicates {
         @Override
         public int compile(Alphabet<SymbolSpanPredicate> predicates) {
             return predicates.get(this);
+        }
+    }
+
+
+    public static class CheckFeaturePredicate implements SymbolSpanPredicate {
+        String name;
+
+        public CheckFeaturePredicate(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
+            Set<String> feats = (Set<String>) span.features.get("_fs");
+            if(feats == null)
+                return false;
+
+            return feats.contains(name);
+        }
+
+        @Override
+        public int compile(Alphabet<SymbolSpanPredicate> predicates) {
+            return predicates.get(this);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if(this == o)
+                return true;
+            if(o == null || getClass() != o.getClass())
+                return false;
+            CheckFeaturePredicate that = (CheckFeaturePredicate) o;
+
+            return Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name);
         }
     }
 
