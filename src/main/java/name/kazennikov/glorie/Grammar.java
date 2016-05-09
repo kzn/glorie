@@ -117,8 +117,9 @@ public class Grammar {
         }
 
         List<Production> prods = new ArrayList<>();
+
         for(Production p : toRewrite) {
-            generateEpsilonFree(p, eps, new ArrayList<Symbol>(), 0, prods);
+            generateEpsilonFree(p, eps, new ArrayList<>(), 0, prods);
         }
 
         this.productions = prods;
@@ -189,6 +190,7 @@ public class Grammar {
      */
     public void rewriteTopLevelOr() {
         List<Production> prods = new ArrayList<>();
+
         for(Production p : productions) {
             if(p.rhs.size() == 1 && (p.rhs.get(0) instanceof SymbolGroup.Or)) {
                 Symbol s = p.rhs.get(0);
@@ -385,16 +387,33 @@ public class Grammar {
         }
     }
 
+
+    /**
+     * Predicate optimization data.
+     *
+     * Sometimes, the evaluation result of one predicate can be used for other
+     * predicates. Currently, this is used for equality/inequality predicates.
+     * For example, if we checked that foo = "bar" and is holds true,
+     * then we could also set the result of predicate foo = "baz" to false, as we
+     * assume, that the equality predicate a categorical predicate i.e. "1 of n" and can
+     * take only one value simultaneously.
+     */
     public static class PredInfo {
         TIntArrayList alsoTrue = new TIntArrayList(); // if x true, then these also true
         TIntArrayList alsoFalse = new TIntArrayList(); // if x true, the these are false
         TIntArrayList converseTrue = new TIntArrayList(); // if x false, then these also true
         TIntArrayList converseFalse = new TIntArrayList();  // if x false, then these are false
         boolean fsa; // is in fsa predicate
-        int fa;
+        int fa; // feature accessor index in fa alphabet
 
     }
 
+    /**
+     * Build FSA for categorical predicates. The optimization is that
+     * if some predicate is categorical (1 of n), then we can build a FSA on strings
+     * {featureAccessorId, valueId, predicateId}, so instead of checking at most n, we
+     * check 1 value through the FSA and find the predicate that holds true on this value
+     */
     public void computePredFSA() {
         BooleanFSABuilder builder = new BooleanFSABuilder();
         for(int i = 0; i < predicates.size(); i++) {
