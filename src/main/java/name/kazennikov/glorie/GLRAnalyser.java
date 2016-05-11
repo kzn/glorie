@@ -66,6 +66,10 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             classLoader = initGroovyClassLoader();
             parserContext = initParserContext();
 
+            if(parserContext.astTransformation() != null) {
+                cc.addCompilationCustomizers(new SimpleASTCustomizer(parserContext.astTransformation()));
+            }
+
 
             grammar = parseGrammar();
             table = new GLRTable(grammar);
@@ -86,12 +90,14 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
     private ParserContext initParserContext() throws Exception {
         if(parserContext != null)
             return parserContext;
+
         if(parserContextClassName == null) {
             return new BasicParserContext();
         }
 
         try {
             Class c = classLoader.loadClass(parserContextClassName);
+
             if(Script.class.isAssignableFrom(c)) {
                 return (ParserContext) ((Script) c.newInstance()).run();
             } else {
@@ -144,6 +150,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
         MethodResolver resolver = new SimpleMethodResolver(Arrays.asList((SimpleExtensionModule) ext));
         cc.addCompilationCustomizers(new SimpleASTCustomizer(new ParametrizedStaticCompileTransformation(resolver)));
+
         return classLoader;
     }
 

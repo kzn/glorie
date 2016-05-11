@@ -3,6 +3,7 @@ package name.kazennikov.glorie;
 
 import name.kazennikov.features.Function;
 import name.kazennikov.features.MemoizedValue;
+import org.codehaus.groovy.transform.ASTTransformation;
 
 /**
  * Parser Context for customization of parsing process of GLR rules.
@@ -76,5 +77,12 @@ public interface ParserContext {
 	 * @return symbol span predicate
 	 */
 	public SymbolSpanPredicate parseFeaturePredicate(String feature);
+
+    /**
+     * Custom AST Transformation for groovy code compiled within GLR.
+     * Applies to: global grammar code, RHS actions
+     * @return ast transformation, or null in none defined
+     */
+    public ASTTransformation astTransformation();
 
 }

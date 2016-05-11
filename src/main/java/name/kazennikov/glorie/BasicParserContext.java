@@ -4,6 +4,7 @@ import name.kazennikov.features.Function;
 import name.kazennikov.features.FunctionRewriter;
 import name.kazennikov.features.MemoizedValue;
 import name.kazennikov.glorie.func.FeatureFunctions;
+import org.codehaus.groovy.transform.ASTTransformation;
 
 import java.util.*;
 
@@ -340,4 +341,9 @@ public class BasicParserContext implements ParserContext {
             return new SymbolSpanPredicates.SourceCodeSymbolSpanPredicate(feature);
         }
 	}
+
+    @Override
+    public ASTTransformation astTransformation() {
+        return null;
+    }
 }
