@@ -39,7 +39,31 @@ public abstract class FieldedRHSAction implements CompiledRHSAction {
 		}
 	}
 
-	/**
+    public String getText() {
+        return text;
+    }
+
+    public FeatureMap getDocFeats() {
+        return docFeats;
+    }
+
+    public CompiledGrammar.Rule getRule() {
+        return rule;
+    }
+
+    public Production getProduction() {
+        return production;
+    }
+
+    public SymbolSpan getTarget() {
+        return target;
+    }
+
+    public List<SymbolSpan> getRHS() {
+        return rhs;
+    }
+
+    /**
 	 * Execute the action with arguments set in the object fields
 	 * @return
 	 */
