@@ -839,7 +839,7 @@ public class SymbolSpanPredicates {
         @Override
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
-            return value.matcher(v.toString()).matches();
+            return v != null && value.matcher(v.toString()).matches();
         }
     }
 
@@ -860,7 +860,7 @@ public class SymbolSpanPredicates {
         @Override
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
-            return value.matcher(v.toString()).find();
+            return v != null && value.matcher(v.toString()).find();
         }
     }
 
