@@ -225,7 +225,7 @@ public class SymbolSpanPredicates {
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
 
-            if(value instanceof String && v instanceof String) {
+            if(v != null && value instanceof String && v instanceof String) {
                 return ((String) value).equalsIgnoreCase((String) v);
             }
 
@@ -492,6 +492,10 @@ public class SymbolSpanPredicates {
         @Override
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             span = (SymbolSpan) annotationAccessor.get(eval, span);
+
+            if(span == null)
+                return false;
+
             int spanId = span.id;
             if(spanId >= eval.input.size()) {
                 spanId = eval.input.inputIndex(span.start);
@@ -570,6 +574,10 @@ public class SymbolSpanPredicates {
 		@Override
 		public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
 			span = (SymbolSpan) annotationAccessor.get(eval, span);
+
+            if(span == null)
+                return false;
+
 			int spanId = span.id;
 
 			if(spanId >= eval.input.size()) {
@@ -705,7 +713,7 @@ public class SymbolSpanPredicates {
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
 
-            return value.compareTo(v) < 0;
+            return v != null && value.compareTo(v) < 0;
         }
     }
 
@@ -727,7 +735,7 @@ public class SymbolSpanPredicates {
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
 
-            return value.compareTo(v) <= 0;
+            return v != null && value.compareTo(v) <= 0;
         }
     }
 
@@ -749,7 +757,7 @@ public class SymbolSpanPredicates {
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
 
-            return value.compareTo(v) > 0;
+            return v != null && value.compareTo(v) > 0;
         }
     }
 
@@ -771,7 +779,7 @@ public class SymbolSpanPredicates {
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object v = fa.get(eval, span);
 
-            return value.compareTo(v) >= 0;
+            return v != null && value.compareTo(v) >= 0;
         }
     }
 
@@ -921,7 +929,7 @@ public class SymbolSpanPredicates {
         @Override
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             Object value = fa.get(eval, span);
-            return vals.contains(value);
+            return value != null && vals.contains(value);
         }
     }
 
@@ -938,6 +946,10 @@ public class SymbolSpanPredicates {
 		@Override
 		public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
 			span = (SymbolSpan) annotationAccessor.get(eval, span);
+
+            if(span == null)
+                return false;
+
 			int spanId = span.id;
 
 			if(spanId >= eval.input.size()) {
