@@ -85,8 +85,8 @@ public class Grammar {
     	productions = newProds;
     }
 
-    public Symbol makeSynthNT() {
-    	String name = String.format("__%05d", ++nextSynthProductionId);
+    public Symbol makeSynthNT(int lineNum) {
+    	String name = String.format("__%d_%05d", lineNum, ++nextSynthProductionId);
     	Symbol nt = new Symbol(name, true);
     	return nt;
     }
@@ -153,7 +153,7 @@ public class Grammar {
      * Add synth root for LR-table building
      */
     public void augmentGrammar() {
-        Symbol newRoot = makeSynthNT();
+        Symbol newRoot = makeSynthNT(0);
         Production p = new Production(null, newRoot, Arrays.asList(start, Symbol.EOF), true, null, null, 1.0, false);
         productions.add(p);
         lrStart = newRoot;
@@ -497,7 +497,7 @@ public class Grammar {
 
 				if(index == srcSym.size()) {
 					srcSym.add(s);
-					Symbol dest = makeSynthNT();
+					Symbol dest = makeSynthNT(p.sourceLine);
 					dstSym.add(dest);
 					prods.add(new Production(p.parent, dest, Arrays.asList(s), true, null, null, 1.0, false));
 				}

@@ -63,7 +63,7 @@ public class TerminalRewriter implements ProductionRewriter {
 				Symbol newS = ntmap.get(rec);
 
 				if(newS == null) {
-					newS = g.makeSynthNT();
+					newS = g.makeSynthNT(p.sourceLine);
 					List<Symbol> rhs1 = new ArrayList<>();
 					rhs1.add(s);
 					out.add(new Production(p, newS, rhs1, true, null, null, 1.0, false));

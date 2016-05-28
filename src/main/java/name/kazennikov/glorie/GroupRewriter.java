@@ -40,7 +40,7 @@ public class GroupRewriter implements ProductionRewriter {
 			if(s instanceof SymbolGroup.Or) {
 				SymbolGroup.Or or = new SymbolGroup.Or();
 				or.syms = rewrite(p, g, ((SymbolGroup) s).syms, new ArrayList<Symbol>(), productions);
-				Symbol nt = g.makeSynthNT();
+				Symbol nt = g.makeSynthNT(p.sourceLine);
                 for(Symbol ss : or.syms) {
                     productions.add(new Production(p, nt, Arrays.asList(ss), true, null, null, 1.0, false));
                 }
@@ -50,7 +50,7 @@ public class GroupRewriter implements ProductionRewriter {
 			} else if(s instanceof SymbolGroup.Range) {
 				SymbolGroup.Range r = new SymbolGroup.Range(((SymbolGroup.Range) s).min, ((SymbolGroup.Range) s).max);
 				r.syms = rewrite(p, g, ((SymbolGroup) s).syms, new ArrayList<Symbol>(), productions);
-				Symbol nt = g.makeSynthNT();
+				Symbol nt = g.makeSynthNT(p.sourceLine);
 				productions.add(new Production(p, nt, Arrays.asList((Symbol)r), true, null, null, 1.0, false));
 				out = nt;
                 out.root = s.root;
