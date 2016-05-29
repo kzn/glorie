@@ -39,7 +39,6 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
     /**
      * Parses java code source
-     * @param ctx
      * @return source code as a string with some technical information in the comment in the first line
      */
     public String parseSource(GLORIEParser.JavaCodeContext ctx) {
@@ -517,7 +516,6 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
 
             for(GLORIEParser.FeatureContext featCtx : ctx.feature()) {
-                String s = featCtx.getChild(0).getText();
                 SymbolSpanPredicate p = featCtx.featureSpec().accept(new PredicateParser());
                 p = parserContext.optimize(p);
                 if(featCtx.neg() != null) {
