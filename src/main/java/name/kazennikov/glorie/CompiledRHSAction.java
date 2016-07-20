@@ -5,7 +5,7 @@ import name.kazennikov.logger.Logger;
 import java.util.List;
 
 /**
- * Actual executable RHS action code.
+ * Actual executable RHS action.
  * An RHS action is an check/action procedure.
  *
  * The check part determines that the reduce action of GLR grammar is valid
@@ -20,24 +20,30 @@ public interface CompiledRHSAction {
 
 	/**
 	 * Execute the action
+     *
 	 * @param text document text
-     * @param  docFeats document feats
+     * @param docFeats document features
 	 * @param rule current rule
 	 * @param target reduced (target) symbol
 	 * @param rhs actual symbol spans of the RHS of the rule
-	 * @return true, if reduce action is successful
+     *
+	 * @return true, if reduce action succeeded
 	 */
 	public boolean execute(String text, gate.FeatureMap docFeats, CompiledGrammar.Rule rule, SymbolSpan target, List<SymbolSpan> rhs);
 
 
 	/**
-	 * Simple compiled RHS action class that enhanced the stacktrace of an exception occurred during execution of
-	 * RHS action code
+	 * Compiled RHS action that enhances stack trace if an exception is occurred during the action execution
 	 */
 	public static class Friendly implements CompiledRHSAction {
 		CompiledRHSAction action;
 		SourceInfo sourceInfo;
 
+        /**
+         * Constructor
+         * @param action wrapped action
+         * @param sourceInfo source code info for stack trace enhancements
+         */
 		public Friendly(CompiledRHSAction action, SourceInfo sourceInfo) {
 			this.action = action;
 			this.sourceInfo = sourceInfo;
@@ -56,7 +62,8 @@ public interface CompiledRHSAction {
 	}
 
 	/**
-	 * Simple RHS action that copies to the reduced symbol all features from the root symbol of the RHS
+	 * Default RHS action.
+     * It copies all features from the root symbol of the RHS to to reduced (target) symbol
 	 */
 	public static class Simple implements CompiledRHSAction {
 

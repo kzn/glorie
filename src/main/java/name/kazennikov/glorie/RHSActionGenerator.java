@@ -1,19 +1,24 @@
 package name.kazennikov.glorie;
 
 /**
- * A container of generated RHS action code
+ * Container for the compiled RHS action code
  */
 public interface RHSActionGenerator {
 	public static final Simple SIMPLE = new Simple();
 
 
 	/**
-	 * Generated an executable RHS action on contained data
-	 * @return
-	 * @throws Exception
+	 * Returns compiled RHS action bounded with this generator.
+     *
+     * If the generator is issued from the {@code RHSActionCompiler}
+     * then with method should be invoked *only* after the {@code RHSActionCompiler.compile()}
+     * is called
 	 */
 	public CompiledRHSAction generate() throws Exception;
 
+    /**
+     * Simple generator that wraps a default RHS action
+     */
 	class Simple implements RHSActionGenerator {
 
 		@Override
