@@ -6,24 +6,39 @@ import name.kazennikov.features.MemoizedValue;
 import org.codehaus.groovy.transform.ASTTransformation;
 
 /**
- * Parser Context for customization of parsing process of GLR rules.
+ * Interface for customization of parsing process of GLR rules.
+ *
+ * Allows to customize:
+ *
+ * 1. Predicate-related customizations
+ *    - Meta features.
+ *    - Feature value operators
+ *    - Context predicates
+ *    - Typed strings transformations
+ *    - Feature predicates
+ *    - Predicate functions
+ *
+ * 2. Optimization and transformation customizations
+ *    - optimize symbol predicates
+ *    - optimize predicate function
+ *
+ * 3. Groovy code AST transformation
  *
  *
  */
 public interface ParserContext {
 
     /**
-     * Get feature predicate on constant value for given operation name
+     * Get feature predicate on constant value by operator name
      *
      * @param op  operator name
      * @param accessor accessor of the feature in the SymbolSpan
      * @param value test value
-     * @return
      */
     public SymbolSpanPredicate getFeaturePredicate(String op, FeatureAccessor accessor, Object value);
 
     /**
-     * Get feature accessor for meta feature
+     * Get feature accessor for meta feature by name
      *
      * @param type meta feature name
      * @return
@@ -42,9 +57,10 @@ public interface ParserContext {
 
     /**
      * Convert typed string into grammar symbol
+     *
      * @param type symbol type
      * @param text raw text value
-     * @param quote quote character (only \0, ', " or / for now)
+     * @param quote quote character (only \0, ', " or / supported for now)
      * @return
      */
     public Symbol typedStringSymbol(String type, String text, char quote);
@@ -52,6 +68,7 @@ public interface ParserContext {
 
     /**
      * Get function by name
+     *
      * @param name function name
      * @return
      */
@@ -59,6 +76,7 @@ public interface ParserContext {
 
     /**
      * Optimize function evaluator (called before evaluator post processing, e.g. values injection)
+     *
      * @param value evaluator
      * @return optimized evaluator
      */
@@ -66,13 +84,15 @@ public interface ParserContext {
 
     /**
      * Optimize symbol span predicate
+     *
      * @param predicate
      * @return
      */
     public SymbolSpanPredicate optimize(SymbolSpanPredicate predicate);
 
 	/**
-	 * Get symbol span predicate for feature (used if feature is given by name only)
+	 * Get predicate feature by name
+     *
 	 * @param feature feature name
 	 * @return symbol span predicate
 	 */
@@ -80,7 +100,8 @@ public interface ParserContext {
 
     /**
      * Custom AST Transformation for groovy code compiled within GLR.
-     * Applies to: global grammar code, RHS actions
+     * Applies to: global grammar code, RHS actions, post-process RHS actions
+     *
      * @return ast transformation, or null in none defined
      */
     public ASTTransformation astTransformation();

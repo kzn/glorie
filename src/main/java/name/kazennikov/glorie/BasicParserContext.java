@@ -57,7 +57,7 @@ import java.util.*;
  *     - 'fw', first word in the context
  *     - 'lw', last word in the context
  *
- *  6. Feature functions:
+ *  6. Predicate functions:
  *     - 'fw', first word predicate function
  *     - 'lw', last word predicate function
  *
