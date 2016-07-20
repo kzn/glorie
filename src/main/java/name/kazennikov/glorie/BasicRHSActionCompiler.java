@@ -116,7 +116,6 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 		source.append("package " + actionsDirName + ";\n");
 		source.append(CompiledGrammar.DEFAULT_IMPORTS + "\n" + (g.imports == null? "" : g.imports) + "\n");
 		source.append("class " + className + " extends " + FieldedRHSAction.class.getName() + " {\n");
-		Set<String> bindings = rule.production.bindingsNames();
 
 		for(String block : g.codeBlocks) {
 			source.append(sourceInfo.addBlock(source.toString(), block + "\n"));

@@ -8,16 +8,16 @@ import gate.creole.ResourceInstantiationException;
 import gnu.trove.list.array.TIntArrayList;
 
 /**
- * A production of RHS grammar
+ * Production of GLR Grammar
  */
 public class Production {
 
     /**
-     * Represents a binding in the RHS
+     * Right Hand Side binding info
      */
     public static class BindingInfo {
         String name;                                        // binding name
-        boolean type;                                       // type, true if the binding value is one of RHS symbols and not in them
+        boolean type;                                       // type, true if the label belongs to one  one of RHS symbols and not contained in them
         TIntArrayList path = new TIntArrayList();           // index-based path to extract binding value
 
         public BindingInfo(String name, boolean type, TIntArrayList path) {
@@ -91,7 +91,8 @@ public class Production {
 
 
     /**
-     * Extract binding names of this production
+     * Extract all binding (label) names of this production recursively by visiting
+     * all SymbolGroup RHS elements
      * @return
      */
     public Set<String> bindings() {
@@ -121,9 +122,8 @@ public class Production {
     }
 
     /**
-     * Computes binding info wrt grammar
-     * The grammar is needed as if a binding is contained in another production then there could be several ways to
-     * represent it
+     * Computes binding info relative to given grammar.
+     * This function extracts ALL bindings either specified in the RHS directly, or embedded in the one of the RHS symbols
      *
      * @param g grammar
      */
@@ -173,7 +173,8 @@ public class Production {
 
 
     /**
-     * Validate all binding of the RHS
+     * Validate all bindings of the RHS symbols
+     *
      * @throws ResourceInstantiationException
      */
     public void validateBindings() throws ResourceInstantiationException {
@@ -183,10 +184,13 @@ public class Production {
     }
 
     /**
-     * Validate binding
+     * Validate bindings present in the given symbol. This function support unrestricted (AST) form of RHS.
+     *
      * It is not allowed to bind a symbol under the unbounded repetition
-     * @param s
-     * @param stack
+     *
+     * @param s current symbol
+     * @param stack stack of parent symbols (e.g. SymbolGroups)
+     *
      * @throws ResourceInstantiationException
      */
     private void validateBindings(Symbol s, ArrayList<Symbol> stack) throws ResourceInstantiationException {
@@ -220,11 +224,12 @@ public class Production {
 
 
     /**
-     * Find the most distant parent (a production that in the source, pre-transformed grammar)
-     * @return
+     * Find the most distant parent, a source production of the pre-transformed grammar
+     * @return source production
      */
     public Production rootParent() {
         Production p = this;
+
         while(p.parent != null) {
             p = p.parent;
         }
@@ -233,7 +238,8 @@ public class Production {
     }
 
     /**
-     * Initialize root index
+     * Initialize the index of an RHS symbol that has a root mark on it.
+     * By default it is the last symbol of the production.
      */
     public void findRootIndex() {
         rootIndex = 0;
@@ -243,26 +249,5 @@ public class Production {
                 break;
             }
         }
-    }
-
-    public BindingInfo getBindingInfo(String label) {
-        for(BindingInfo info : bindings) {
-            if(info.name.equals(label))
-                return info;
-        }
-
-
-
-        return null;
-    }
-
-    public Set<String> bindingsNames() {
-        Set<String> set = new HashSet<>();
-
-        for(BindingInfo info : bindings) {
-            set.add(info.name);
-        }
-
-        return set;
     }
 }
