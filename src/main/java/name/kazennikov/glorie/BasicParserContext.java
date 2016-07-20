@@ -9,9 +9,9 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import java.util.*;
 
 /**
- * Basic parser context. It is intended as a reasonable base for various extensions
+ * Basic parser context. Designed as a reasonable base class for user extensions
  *
- * Its features:
+ * Basic parser context definition:
  *
  * 1. Meta features:
  *    - type
@@ -19,7 +19,7 @@ import java.util.*;
  *    - end
  *    - length
  *
- *  2. Constant value operators:
+ *  2. Feature operators:
  *     - == - equals
  *     - != - not equals
  *     - > - greater than
@@ -30,14 +30,36 @@ import java.util.*;
  *     - ==~ - matches regexp
  *     - ==* - equals ignore case (for strings)
  *     - !=* - not equals ignore case (for string)
+ *     - 'in' - checks if feature equals any of given constant values. Possible values
+ *       are written in a '|' separated string e.g. "1|2|3" to check if a feature is equals '1', '2' or '3'
+ *     - a mechanism to handle 'notFoo' predicates if not defined. They are transformed
+ *       to not(foo(...)) predicate if 'foo' predicates is defined
+
  *
  *  3. Context predicates:
  *     - startsWith - true, if spans A and B starts with same position
  *     - notStartsWith - true, if spans A and B NOT start with the same position
+ *     - coextWith - true, if spans A and B start and ands on same positions
+ *     - contains - true, if span A contains fully or is coextensive with span B
+ *     - a mechanism to handle 'notFoo' predicates if not defined. They are transformed
+ *       to not(foo(...)) predicate if 'foo' predicates is defined
  *
  *  4. Typed strings:
- *     - default is mapped to Token type
- *     - typed is mapped to a span of specified type
+ *     - default is mapped to check Token.string feature (case insensitive)
+ *     - 'cs' is is mapped to check Token.string feature (case sensitive)
+ *     - any other types are mapped to check case insensitively 'string' feature of a span of specified type
+ *
+ *  5. Computed predicate features
+ *     - 'cap' (orth == upperInitial)
+ *     - 'lc' (orth == lowercase)
+ *     - 'uc' (orth == allCaps)
+ *     - 'mixcap' (orth == mixed)
+ *     - 'fw', first word in the context
+ *     - 'lw', last word in the context
+ *
+ *  6. Feature functions:
+ *     - 'fw', first word predicate function
+ *     - 'lw', last word predicate function
  *
  */
 public class BasicParserContext implements ParserContext {
