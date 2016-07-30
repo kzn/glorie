@@ -5,15 +5,15 @@ import org.codehaus.groovy.runtime.m12n.SimpleExtensionModule;
 import java.util.List;
 
 /**
- * Created by kzn on 6/21/15.
+ * Groovy extension module that provides user-set extension classes (see {@code SimpleExtensionModule}
  */
-public class ManualModuleExtension extends SimpleExtensionModule {
+public class CustomExtensionModule extends SimpleExtensionModule {
 
-    List<Class> instanceExtensionClasses;
-    List<Class> staticExtensionClasses;
-    List<Class> globalStaticMethodClasses;
+    protected List<Class> instanceExtensionClasses;
+    protected List<Class> staticExtensionClasses;
+    protected List<Class> globalStaticMethodClasses;
 
-    public ManualModuleExtension(String moduleName, String moduleVersion) {
+    public CustomExtensionModule(String moduleName, String moduleVersion) {
         super(moduleName, moduleVersion);
     }
 

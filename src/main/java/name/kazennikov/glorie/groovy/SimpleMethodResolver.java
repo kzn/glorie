@@ -34,8 +34,8 @@ public class SimpleMethodResolver implements MethodResolver {
     public void add(SimpleExtensionModule module) {
         scanClassForExtensionMethods(module.getInstanceMethodsExtensionClasses(), false);
         scanClassForExtensionMethods(module.getStaticMethodsExtensionClasses(), true);
-        if(module instanceof ManualModuleExtension) {
-            for(Class c : ((ManualModuleExtension) module).getGlobalStaticMethodClasses()) {
+        if(module instanceof CustomExtensionModule) {
+            for(Class c : ((CustomExtensionModule) module).getGlobalStaticMethodClasses()) {
                 ClassNode cn = new ClassNode(c);
                 for(MethodNode methodNode : cn.getMethods()) {
                     if(methodNode.isStatic() && methodNode.isPublic()

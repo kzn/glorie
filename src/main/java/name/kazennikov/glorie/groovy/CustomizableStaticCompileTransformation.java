@@ -22,7 +22,7 @@ import java.util.List;
 import static org.codehaus.groovy.ast.ClassHelper.makeWithoutCaching;
 
 /**
- * Groovy AST transformation to implement categories and method overrides as in DefaultGroovyMethods class
+ * Groovy AST transformation that implements categories and method overrides as in DefaultGroovyMethods class does.
  *
  * The class extends CompileStatic AST transformation and override findMethod() behavior. If the method resolver
  * is provided then it is used before any default method resolution techniques. This allows to override already
@@ -53,19 +53,32 @@ import static org.codehaus.groovy.ast.ClassHelper.makeWithoutCaching;
  * -a => a.negative()
  * ~a => a.bitwiseNegate()
  * a as b => a.asType(b)
- * a() => a.call
+ * a(args) => a.call(args)
 
  New:
  * a[b]++ => a.indexedNext(b)
  * a[b]-- => a.indexedPrevious(b)
  */
 @GroovyASTTransformation(phase = CompilePhase.INSTRUCTION_SELECTION)
-public class ParametrizedStaticCompileTransformation extends StaticTypesTransformation {
+public class CustomizableStaticCompileTransformation extends StaticTypesTransformation {
 
+    protected static final ClassNode Deprecated_TYPE = makeWithoutCaching(Deprecated.class);
+
+    public static final String INDEXED_NEXT = "indexedNext";
+    public static final String INDEXED_PREVIOUS = "indexedPrevious";
+
+    public static final String MISSING_PROPERTY = "missingProperty";
+    public static final String MISSING_ATTRIBUTE = "missingAttribute";
+
+    public static final String POSITIVE = "positive";
+    public static final String NEGATIVE = "negative";
+    public static final String BITWISE_NEGATE = "bitwiseNegate";
+
+    public static final String PUT_AT = "putAt";
+    public static final String GET_AT = "getAt";
 
     MethodResolver methodResolver;
 
-    protected static final ClassNode Deprecated_TYPE = makeWithoutCaching(Deprecated.class);
 
     List<TypeCheckingExtension> extensions = new ArrayList<>();
 
@@ -73,6 +86,9 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
     private final StaticTypesWriterControllerFactoryImpl factory = new StaticTypesWriterControllerFactoryImpl();
 
 
+    /**
+     * Custom handling of missing properties
+     */
 	public class PropertyChecker extends TypeCheckingExtension {
 
 
@@ -90,7 +106,7 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
 			ClassNode[] argTypes = new ClassNode[] {getType(prop)};
 
-			List<MethodNode> methods = methodResolver.resolve(target, "missingProperty", argTypes);
+			List<MethodNode> methods = methodResolver.resolve(target, MISSING_PROPERTY, argTypes);
 			methods = StaticTypeCheckingSupport.chooseBestMethod(target, methods, argTypes);
 
 
@@ -98,7 +114,7 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 		}
 	}
 
-    public ParametrizedStaticCompileTransformation(MethodResolver methodResolver) {
+    public CustomizableStaticCompileTransformation(MethodResolver methodResolver) {
         this.methodResolver = methodResolver;
     }
 
@@ -112,8 +128,8 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         visitor.initialize();
         visitor.visitClass(classNode);
 
-        EagerOperatorExpander eagerOperatorExpander = new EagerOperatorExpander(visitor);
-        eagerOperatorExpander.visitClass(classNode);
+        OperatorExpander operatorExpander = new OperatorExpander(visitor);
+        operatorExpander.visitClass(classNode);
 
 
         visitor.performSecondPass();
@@ -137,8 +153,8 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         visitor.initialize();
         visitor.visitMethod(methodNode);
 
-        EagerOperatorExpander eagerOperatorExpander = new EagerOperatorExpander(visitor);
-        eagerOperatorExpander.visitMethod(methodNode);
+        OperatorExpander operatorExpander = new OperatorExpander(visitor);
+        operatorExpander.visitMethod(methodNode);
 
 
         visitor.performSecondPass();
@@ -172,6 +188,9 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         return visitor;
     }
 
+    /**
+     * MethodResolver-based Groovy static compilation visitor
+     */
     public class ExtendedStaticCompilationVisitor extends StaticCompilationVisitor {
 
         public ExtendedStaticCompilationVisitor(SourceUnit unit, ClassNode node) {
@@ -196,13 +215,22 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         }
     }
 
-    class EagerOperatorExpander extends ClassCodeExpressionTransformer {
+    /**
+     * Expand operator to method calls before static analysis is done.
+     *
+     * Groovy transforms operator to functions call by default. But in some
+     * cases it signals an error even then the method call could be resolved with provided
+     * method resolver.
+     *
+     * So some operators need to be expanded to method calls in explicit fashion.
+     *
+     */
+    class OperatorExpander extends ClassCodeExpressionTransformer {
 
         ExtendedStaticCompilationVisitor visitor;
         List<Expression> stack = new ArrayList<>();
-        //boolean inAssign;
 
-        EagerOperatorExpander(ExtendedStaticCompilationVisitor visitor) {
+        OperatorExpander(ExtendedStaticCompilationVisitor visitor) {
             this.visitor = visitor;
         }
 
@@ -217,14 +245,14 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
                 return null;
 
             stack.add(exp);
-            Expression expOld = exp;
-            expOld.getType();
+            Expression origExpr = exp;
+            origExpr.getType();
             exp = super.transform(exp);
-            stack.remove(stack.size() - 1); // as transform may change the exp
+            stack.remove(stack.size() - 1);
             stack.add(exp);
 
             if(exp instanceof BinaryExpression) {
-                exp = rewrite((BinaryExpression)exp, expOld instanceof BinaryExpression? (BinaryExpression) expOld : null);
+                exp = rewrite((BinaryExpression)exp, origExpr instanceof BinaryExpression? (BinaryExpression) origExpr : null);
             } else if(exp instanceof UnaryPlusExpression) {
                 exp = rewrite((UnaryPlusExpression) exp);
             } else if(exp instanceof UnaryMinusExpression) {
@@ -236,9 +264,9 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
             } else if(exp instanceof PrefixExpression) {
                 exp = rewrite((PrefixExpression) exp);
             } else if(exp instanceof AttributeExpression) {
-				exp = rewrite((AttributeExpression) exp, expOld instanceof AttributeExpression? (AttributeExpression) expOld : null);
+				exp = rewrite((AttributeExpression) exp, origExpr instanceof AttributeExpression? (AttributeExpression) origExpr : null);
 			} else if(exp instanceof PropertyExpression) {
-				exp = rewrite((PropertyExpression) exp, expOld instanceof PropertyExpression? (PropertyExpression) expOld : null);
+				exp = rewrite((PropertyExpression) exp, origExpr instanceof PropertyExpression? (PropertyExpression) origExpr : null);
 			}
 
             stack.remove(stack.size() - 1);
@@ -274,10 +302,10 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
                     String type = null;
                     switch(exp.getOperation().getType()) {
                         case Types.PLUS_PLUS:
-                            type = "indexedNext";
+                            type = INDEXED_NEXT;
                             break;
                         case Types.MINUS_MINUS:
-                            type = "indexedPrevious";
+                            type = INDEXED_PREVIOUS;
                             break;
                     }
 
@@ -306,18 +334,21 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
             return exp.transformExpression(this);
         }
 
+
         private Expression rewrite(PrefixExpression exp) {
             if(exp.getExpression() instanceof BinaryExpression) {
                 BinaryExpression bexpr = (BinaryExpression) exp.getExpression();
+
+
                 if(bexpr.getOperation().getType() == Types.LEFT_SQUARE_BRACKET) {
 
                     String type = null;
                     switch(exp.getOperation().getType()) {
                         case Types.PLUS_PLUS:
-                            type = "indexedNext";
+                            type = INDEXED_NEXT;
                             break;
                         case Types.MINUS_MINUS:
-                            type = "indexedPrevious";
+                            type = INDEXED_PREVIOUS;
                             break;
                     }
 
@@ -350,11 +381,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         private Expression rewrite(UnaryPlusExpression exp) {
             ClassNode targetClass = getType(exp.getExpression());
             ClassNode[] argTypes = new ClassNode[0];
-            List<MethodNode> methods = methodResolver.resolve(targetClass, "positive", argTypes);
+            List<MethodNode> methods = methodResolver.resolve(targetClass, POSITIVE, argTypes);
             methods = StaticTypeCheckingSupport.chooseBestMethod(targetClass, methods, argTypes);
 
             if(!methods.isEmpty()) {
-                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), "positive", new ArgumentListExpression());
+                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), POSITIVE, new ArgumentListExpression());
                 visitor.visitMethodCallExpression(mce);
                 return mce;
             }
@@ -376,11 +407,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
 			ClassNode[] argTypes = new ClassNode[] {getType(prop)};
 
-			List<MethodNode> methods = methodResolver.resolve(target, "missingProperty", argTypes);
+			List<MethodNode> methods = methodResolver.resolve(target, MISSING_PROPERTY, argTypes);
 			methods = StaticTypeCheckingSupport.chooseBestMethod(target, methods, argTypes);
 
 			if(!methods.isEmpty()) {
-				MethodCallExpression mce = new MethodCallExpression(exp.getObjectExpression(), "missingProperty", new ArgumentListExpression(prop));
+				MethodCallExpression mce = new MethodCallExpression(exp.getObjectExpression(), MISSING_PROPERTY, new ArgumentListExpression(prop));
 				visitor.visitMethodCallExpression(mce);
 				return mce;
 			}
@@ -401,11 +432,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
 			ClassNode[] argTypes = new ClassNode[] {getType(prop)};
 
-			List<MethodNode> methods = methodResolver.resolve(target, "missingAttribute", argTypes);
+			List<MethodNode> methods = methodResolver.resolve(target, MISSING_ATTRIBUTE, argTypes);
 			methods = StaticTypeCheckingSupport.chooseBestMethod(target, methods, argTypes);
 
 			if(!methods.isEmpty()) {
-				MethodCallExpression mce = new MethodCallExpression(exp.getObjectExpression(), "missingAttribute", new ArgumentListExpression(prop));
+				MethodCallExpression mce = new MethodCallExpression(exp.getObjectExpression(), MISSING_ATTRIBUTE, new ArgumentListExpression(prop));
 				visitor.visitMethodCallExpression(mce);
 				return mce;
 			}
@@ -417,11 +448,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         private Expression rewrite(UnaryMinusExpression exp) {
             ClassNode targetClass = getType(exp.getExpression());
             ClassNode[] argTypes = new ClassNode[0];
-            List<MethodNode> methods = methodResolver.resolve(targetClass, "negative", argTypes);
+            List<MethodNode> methods = methodResolver.resolve(targetClass, NEGATIVE, argTypes);
             methods = StaticTypeCheckingSupport.chooseBestMethod(targetClass, methods, argTypes);
 
             if(!methods.isEmpty()) {
-                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), "negative", new ArgumentListExpression());
+                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), NEGATIVE, new ArgumentListExpression());
                 visitor.visitMethodCallExpression(mce);
                 return mce;
             }
@@ -432,11 +463,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
         private Expression rewrite(BitwiseNegationExpression exp) {
             ClassNode targetClass = getType(exp.getExpression());
             ClassNode[] argTypes = new ClassNode[0];
-            List<MethodNode> methods = methodResolver.resolve(targetClass, "bitwiseNegate", argTypes);
+            List<MethodNode> methods = methodResolver.resolve(targetClass, BITWISE_NEGATE, argTypes);
             methods = StaticTypeCheckingSupport.chooseBestMethod(targetClass, methods, argTypes);
 
             if(!methods.isEmpty()) {
-                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), "bitwiseNegate", new ArgumentListExpression());
+                MethodCallExpression mce = new MethodCallExpression(exp.getExpression(), BITWISE_NEGATE, new ArgumentListExpression());
                 visitor.visitMethodCallExpression(mce);
                 return mce;
             }
@@ -461,11 +492,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
                         ClassNode targetClass = getType(target);
                         ClassNode[] argTypes = new ClassNode[] {getType(index), getType(value)};
-                        List<MethodNode> methods = methodResolver.resolve(getType(target), "putAt", argTypes);
+                        List<MethodNode> methods = methodResolver.resolve(getType(target), PUT_AT, argTypes);
                         methods = StaticTypeCheckingSupport.chooseBestMethod(targetClass, methods, argTypes);
 
                         if(!methods.isEmpty()) {
-                            MethodCallExpression mce = new MethodCallExpression(target, "putAt", new ArgumentListExpression(index, value));
+                            MethodCallExpression mce = new MethodCallExpression(target, PUT_AT, new ArgumentListExpression(index, value));
                             visitor.visitMethodCallExpression(mce);
                             return mce;
                         }
@@ -478,11 +509,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
 					ClassNode[] argTypes = new ClassNode[] {getType(prop), getType(value)};
 
-					List<MethodNode> methods = methodResolver.resolve(target, "missingAttribute", argTypes);
+					List<MethodNode> methods = methodResolver.resolve(target, MISSING_ATTRIBUTE, argTypes);
 					methods = StaticTypeCheckingSupport.chooseBestMethod(target, methods, argTypes);
 
 					if(!methods.isEmpty()) {
-						MethodCallExpression mce = new MethodCallExpression(left.getObjectExpression(), "missingAttribute", new ArgumentListExpression(prop, value));
+						MethodCallExpression mce = new MethodCallExpression(left.getObjectExpression(), MISSING_ATTRIBUTE, new ArgumentListExpression(prop, value));
 						visitor.visitMethodCallExpression(mce);
 						return mce;
 					}
@@ -496,11 +527,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
 					ClassNode[] argTypes = new ClassNode[] {getType(prop), getType(value)};
 
-					List<MethodNode> methods = methodResolver.resolve(target, "missingProperty", argTypes);
+					List<MethodNode> methods = methodResolver.resolve(target, MISSING_PROPERTY, argTypes);
 					methods = StaticTypeCheckingSupport.chooseBestMethod(target, methods, argTypes);
 
 					if(!methods.isEmpty()) {
-						MethodCallExpression mce = new MethodCallExpression(left.getObjectExpression(), "missingProperty", new ArgumentListExpression(prop, value));
+						MethodCallExpression mce = new MethodCallExpression(left.getObjectExpression(), MISSING_PROPERTY, new ArgumentListExpression(prop, value));
 						visitor.visitMethodCallExpression(mce);
 						return mce;
 					}
@@ -516,11 +547,11 @@ public class ParametrizedStaticCompileTransformation extends StaticTypesTransfor
 
                 ClassNode targetClass = getType(target);
                 ClassNode[] argTypes = new ClassNode[] {getType(index)};
-                List<MethodNode> methods = methodResolver.resolve(getType(target), "getAt", argTypes);
+                List<MethodNode> methods = methodResolver.resolve(getType(target), GET_AT, argTypes);
                 methods = StaticTypeCheckingSupport.chooseBestMethod(targetClass, methods, argTypes);
 
                 if(!methods.isEmpty()) {
-                    MethodCallExpression mce = new MethodCallExpression(target, "getAt", new ArgumentListExpression(index));
+                    MethodCallExpression mce = new MethodCallExpression(target, GET_AT, new ArgumentListExpression(index));
                     visitor.visitMethodCallExpression(mce);
                     return mce;
                 }

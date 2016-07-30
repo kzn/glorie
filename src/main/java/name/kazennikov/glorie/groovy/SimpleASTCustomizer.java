@@ -11,7 +11,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
 /**
- * Created by kzn on 6/23/15.
+ * AST Customizer that applies transformation to every passed source unit
  */
 public class SimpleASTCustomizer extends CompilationCustomizer implements CompilationUnitAware {
 
@@ -32,14 +32,14 @@ public class SimpleASTCustomizer extends CompilationCustomizer implements Compil
     }
 
     private static CompilePhase findPhase(ASTTransformation transformation) {
-        if (transformation==null)
+        if(transformation == null)
             throw new IllegalArgumentException("Provided transformation must not be null");
 
         final Class<?> clazz = transformation.getClass();
         final GroovyASTTransformation annotation = clazz.getAnnotation(GroovyASTTransformation.class);
 
-        if (annotation==null)
-            throw new IllegalArgumentException("Provided ast transformation is not annotated with "+GroovyASTTransformation.class.getName());
+        if(annotation == null)
+            throw new IllegalArgumentException("Provided ast transformation is not annotated with " + GroovyASTTransformation.class.getName());
 
         return annotation.phase();
     }
@@ -48,7 +48,7 @@ public class SimpleASTCustomizer extends CompilationCustomizer implements Compil
 
     @Override
     public void call(SourceUnit source, GeneratorContext context, ClassNode classNode) {
-        if (transformation instanceof CompilationUnitAware) {
+        if(transformation instanceof CompilationUnitAware) {
             ((CompilationUnitAware) transformation).setCompilationUnit(compilationUnit);
         }
 

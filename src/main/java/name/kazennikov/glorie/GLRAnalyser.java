@@ -127,7 +127,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             classLoader.addClasspath(classPath);
         }
 
-        DynamicModuleExtension ext = new DynamicModuleExtension(classLoader, "groovy4glr", "1.0");
+        DynamicExtensionModule ext = new DynamicExtensionModule(classLoader, "groovy4glr", "1.0");
 
         // add default extensions
         if(instanceExtensionClasses == null)
@@ -143,13 +143,23 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         staticExtensionClasses.add(GroovyExtensions.Static.class.getName());
         globalExtensionClasses.add(GroovyExtensions.Global.class.getName());
 
-        ext.setInstanceExtensionClassNames(instanceExtensionClasses);
-        ext.setStaticExtensionClassNames(staticExtensionClasses);
-        ext.setGlobalExtensionClassNames(globalExtensionClasses);
+
+        for(String cn : instanceExtensionClasses) {
+            ext.addInstanceExtension(cn);
+        }
+
+        for(String cn : staticExtensionClasses) {
+            ext.addStaticExtension(cn);
+        }
+
+        for(String cn : globalExtensionClasses) {
+            ext.addGlobalExtension(cn);
+        }
+
         ext.init();
 
         MethodResolver resolver = new SimpleMethodResolver(Arrays.asList((SimpleExtensionModule) ext));
-        cc.addCompilationCustomizers(new SimpleASTCustomizer(new ParametrizedStaticCompileTransformation(resolver)));
+        cc.addCompilationCustomizers(new SimpleASTCustomizer(new CustomizableStaticCompileTransformation(resolver)));
 
         return classLoader;
     }
