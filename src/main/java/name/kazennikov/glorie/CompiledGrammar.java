@@ -689,6 +689,11 @@ public class CompiledGrammar {
         predFSA = fsaBuilder.build();
     }
 
+    /**
+     * Compute greedy policies.
+     * Currently only 'typed' policies are supported. These are created
+     * if any production has a greedy flag
+     */
     public void computePolicies() {
         TIntHashSet set = new TIntHashSet();
         for(Rule r : rules) {

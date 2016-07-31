@@ -4,17 +4,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kzn on 3/17/16.
+ * Greedy policy.
+ *
+ * The policy is divided into two parts:
+ * 1. The maximal production selection function. It selects a maximal performed reduction (symbol) from a list of
+ *    reductions.
+ * 2. A check procedure for a symbol node. The procedure may return any of three values:
+ *    - REMOVE - this node is unconditionally removed
+ *    - CONTINUE - this node has passed the check, but the check procedure should continue on other related nodes
+ *    - ACCEPT - unconditionally accept this node. No further tree checks are performed on this node.
  */
 public interface GreedyPolicy {
 
-    enum Result {
+    public enum Result {
         REMOVE,
         CONTINUE,
         ACCEPT
     }
 
+
+    /**
+     * Choose maximal (in terms of the policy) reduction from the list
+     * @param l list of reductions
+     * @return
+     */
     public GLRParser.PerformedReduction max(List<GLRParser.PerformedReduction> l);
+
+
+    /**
+     * Check if passed symbol node passes the checks WRT provided reduction
+     * @param r reduction
+     * @param v visitor to inner symbols
+     * @param symbolNode inspected symbol node
+     *
+     * @return pass status
+     */
     public Result check(GLRParser.PerformedReduction r, GreedyVisitor v, SymbolNode symbolNode);
 
 
@@ -30,6 +54,22 @@ public interface GreedyPolicy {
         }
     }
 
+    /**
+     * 'Type' Greedy policy.
+     *
+     * The max reduction is defined as follows:
+     * 1. The reduction must be of exactly match type with the policy
+     * 2. The reduction must be marked as greedy
+     * 3. The reduction should start as early as possible (the end of the reduction is fixed by current position)
+     *
+     * The check is defined as follows:
+     * 1. ACCEPT all symbols that end before the maximal reduction
+     * 2. REMOVE all symbols of the policy type that start after the current position
+     * 3. allow co-staring greedy symbols from current position
+     * 4. REMOVE the symbol node if all possible parses are filtered out.
+     *
+     *
+     */
     public static class Type extends Base {
 
         int symbol;

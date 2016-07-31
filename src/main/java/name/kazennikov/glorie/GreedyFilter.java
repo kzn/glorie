@@ -4,7 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created on 16.03.16.
+ * Production greediness filter.
+ *
+ * The filter is applied after all possible reductions at given position are computed.*
+ * It deletes all parses that conflict with performed greedy reduction.
+
+ * The filter simultaneously applies all greedy policies. A a parse tree state/node is valid
+ * if it is accepted by all greedy policies. In all other cases the state/node is considered invalid
+ * and all node/states that are derived from this state/node are considered invalid too.
+ *
+ *
+ * The filter is applied sequentially to:
+ * 1. pending shifts of the current position
+ * 2. computed root nodes
+ * 3. all 'word' positions for current one. It will filter out all nodes built by conflicting productions
+ * at earlier stages of parsing as the input is a lattice, not a sequence of symbols.
+ *
  *
  * @author Anton Kazennikov
  */
@@ -45,6 +60,11 @@ public class GreedyFilter {
 		return parser.lastStateNodeId + 1;
 	}
 
+    /**
+     * Filter symbol node
+     * @param n source symbol node
+     * @return n, or null if the symbol node is filtered
+     */
     public SymbolNode visit(SymbolNode n) {
         GreedyPolicy.Result res = visitedSymbolNodes[n.index];
         if(res != null) {
@@ -62,6 +82,12 @@ public class GreedyFilter {
         return n;
     }
 
+
+    /**
+     * Filter state node
+     * @param n state node
+     * @return n, or null if the state node is filtered
+     */
     public StateNode visit(StateNode n) {
         GreedyPolicy.Result res = visitedStateNodes[n.index];
         if(res != null) {
@@ -80,12 +106,16 @@ public class GreedyFilter {
     }
 
 
+    /**
+     * Apply filter to the parse state
+     */
 	public void filter() {
         if(visitors.isEmpty())
             return;
 
 		List<GLRParser.PendingShift> shifts = new ArrayList<>(parser.pendingShifts.size());
 
+        // filter pending shifts
 		for(GLRParser.PendingShift shift : parser.pendingShifts) {
 			StateNode n = visit(shift.stateNode);
 			if(n != null) {
@@ -109,7 +139,7 @@ public class GreedyFilter {
         parser.roots.addAll(roots);
 
 
-		// filter next states
+		// filter next positions state, as the may be built earlier
 		for(int i = currentPos; i <= parser.maxWordState; i++) {
 
 			List<StateNode> wordNodes = parser.nodes4word.get(i);
@@ -129,149 +159,4 @@ public class GreedyFilter {
 			wordNodes.addAll(nodes);
 		}
 	}
-
-//	public SymbolNode visitSymbolNode(SymbolNode n) {
-//		int res = visited.get(n);
-//
-//		// if visited, return it
-//		if(res >= 0) {
-//			return res == REMOVED? null : n;
-//		}
-//
-//		int status = checkSymbolNode(n);
-//
-//		if(status == REMOVED) {
-//			visited.put(n, REMOVED);
-//			return null;
-//		} else if(status == ALIVE_STOP) {
-//			visited.put(n, ALIVE);
-//			return n;
-//		}
-//
-//
-//		List<StackNode> filtered = new ArrayList<>(n.childCount());
-//
-//		for(int i = 0; i < n.childCount(); i++) {
-//			StateNode child = n.getChild(i);
-//			StateNode after = visitStateNode(child);
-//			if(after != null) {
-//				filtered.add(after);
-//			}
-//
-//		}
-//
-//		if(filtered.isEmpty()) {
-//			visited.put(n, REMOVED);
-//			return null;
-//		}
-//
-//		n.children = filtered;
-//		visited.put(n, ALIVE);
-//
-//		return n;
-//	}
-//
-//
-//	public StateNode visitStateNode(StateNode n) {
-//		int res = visited.get(n);
-//
-//		// if visited, return it
-//		if(res >= 0) {
-//			return res == REMOVED? null : n;
-//		}
-//
-//		List<StackNode> filtered = new ArrayList<>(n.childCount());
-//
-//		for(int i = 0; i < n.childCount(); i++) {
-//			SymbolNode child = n.getChild(i);
-//			SymbolNode after = visitSymbolNode(child);
-//
-//			if(after != null) {
-//				filtered.add(after);
-//			}
-//
-//		}
-//
-//		if(filtered.isEmpty()) {
-//			visited.put(n, REMOVED);
-//			return null;
-//		}
-//
-//		n.children = filtered;
-//		visited.put(n, ALIVE);
-//
-//		return n;
-//	}
-//
-//
-//	/**
-//	 * Check if symbol node pass the greedy filter
-//	 *
-//	 * @param n symbol node to check
-//	 * @return true, if symbol node successfully passed the filter, false if it is removed
-//	 */
-//	public int checkSymbolNode(SymbolNode n) {
-//
-//		// terminals pass the filter unconditionally
-//		if(n.parseChildren.isEmpty())
-//			return ALIVE_STOP;
-//
-//		// symbols that end before greedy reduction also pass the filter
-//		if(n.symbol.end <= maxReduction.sym.symbol.start)
-//			return ALIVE_STOP;
-//
-//		boolean sameSymbol = n.symbol.symbol == maxReduction.sym.symbol.symbol;
-//
-//		// for now, greediness is applied only for symbols of same type
-//		// for now, fail unconditionally any symbol that start after the greedy reduction start
-//		if(sameSymbol && (n.symbol.start > maxReduction.sym.symbol.start || n.symbol.end < maxReduction.sym.symbol.end))
-//			return REMOVED;
-//
-//		// for now we have only non-terminals that start before or strictly from greedy reduction start
-//
-//		List<GLRParser.ParsingChildrenSet> parses = new ArrayList<>(n.parseChildren.size());
-//
-//
-//		boolean start = n.symbol.start == maxReduction.sym.symbol.start;
-//
-//		for(GLRParser.ParsingChildrenSet parse : n.parseChildren) {
-//			CompiledGrammar.Rule r = parse.rule;
-//
-//			// if co-start && parse is greedy, pass
-//			if(start && sameSymbol) {
-//				if(r.production.greedy) {
-//					parses.add(parse);
-//				}
-//
-//				// skip non-greedy co-start
-//				continue;
-//			}
-//
-//			boolean pass = true;
-//			for(SymbolNode child : parse.items) {
-//				if(visitSymbolNode(child) == null) {
-//					pass = false;
-//					break;
-//				}
-//			}
-//
-//
-//			if(pass) {
-//				parses.add(parse);
-//			}
-//
-//
-//		}
-//
-//		n.parseChildren.clear();
-//
-//		if(parses.isEmpty())
-//			return REMOVED;
-//
-//		n.parseChildren.addAll(parses);
-//
-//		return ALIVE;
-//	}
-//
-
 }

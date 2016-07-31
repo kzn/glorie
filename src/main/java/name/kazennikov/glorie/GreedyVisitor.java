@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kzn on 3/17/16.
+ * Visitor of the graph parse tree state.
+ *
+ * The visitor filters the traversed tree with provided policy
+ *
  */
 public class GreedyVisitor {
 
@@ -24,12 +27,13 @@ public class GreedyVisitor {
     }
 
     public SymbolNode visit(SymbolNode n) {
+        // if node is already filtered by other policies
         if(filter.visitedSymbolNodes[n.index] == GreedyPolicy.Result.REMOVE)
             return null;
 
         GreedyPolicy.Result res = visitedSymbolNodes[n.index];
 
-        // if visited, return it
+        // if already visited by this visitor, return the result
         if(res != null) {
             return res == GreedyPolicy.Result.REMOVE? null : n;
         }
@@ -38,7 +42,6 @@ public class GreedyVisitor {
 
         if(status == GreedyPolicy.Result.REMOVE) {
             visitedSymbolNodes[n.index] = GreedyPolicy.Result.REMOVE;
-
             return null;
         } else if(status == GreedyPolicy.Result.ACCEPT) {
             visitedSymbolNodes[n.index] = GreedyPolicy.Result.ACCEPT;
