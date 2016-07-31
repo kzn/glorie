@@ -42,6 +42,11 @@ public interface GreedyPolicy {
     public Result check(GLRParser.PerformedReduction r, GreedyVisitor v, SymbolNode symbolNode);
 
 
+    /**
+     * Base policy.
+     *
+     * This policy accepts all nodes unconditionally by default
+     */
     public abstract class Base implements GreedyPolicy {
 
         @Override
