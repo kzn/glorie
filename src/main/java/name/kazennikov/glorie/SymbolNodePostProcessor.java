@@ -8,7 +8,7 @@ import name.kazennikov.logger.Logger;
 import java.util.Map;
 
 /**
- * Post processor of output document annotations wrt symbol nodes and source rule
+ * Post-processor of output document annotations wrt symbol nodes and source rule
  *
  * The symbol may have several parses. All parses are processed. The process order
  * is undefined for now. (It will possibly change. E.g. for order in source file)
