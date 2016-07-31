@@ -2,10 +2,7 @@ package name.kazennikov.glorie.groovy;
 
 import groovy.lang.GroovyClassLoader;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Extension module that accepts class names and loads them
@@ -13,9 +10,9 @@ import java.util.Set;
 public class DynamicExtensionModule extends CustomExtensionModule {
     GroovyClassLoader classLoader;
 
-    protected Set<String> instanceExtensionClassNames;
-    protected Set<String> staticExtensionClassNames;
-    protected Set<String> globalExtensionClassNames;
+    protected Set<String> instanceExtensionClassNames = new HashSet<>();
+    protected Set<String> staticExtensionClassNames = new HashSet<>();
+    protected Set<String> globalExtensionClassNames = new HashSet<>();
 
 
     public DynamicExtensionModule(GroovyClassLoader classLoader, String moduleName, String moduleVersion) {
