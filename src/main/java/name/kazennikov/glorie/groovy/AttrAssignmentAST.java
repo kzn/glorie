@@ -9,6 +9,7 @@ import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.syntax.Types;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
+import org.codehaus.groovy.transform.sc.ListOfExpressionsExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,12 @@ public class AttrAssignmentAST implements ASTTransformation {
 		SourceUnit sourceUnit;
 		List<Expression> stack = new ArrayList<>();
 
-		public AttrVisitor(SourceUnit sourceUnit) {
+        protected int varId = 0;
+        protected boolean allowNullValues = false;
+
+		public AttrVisitor(SourceUnit sourceUnit, boolean allowNullValues) {
 			this.sourceUnit = sourceUnit;
+            this.allowNullValues = allowNullValues;
 		}
 
 		@Override
@@ -89,6 +94,19 @@ public class AttrAssignmentAST implements ASTTransformation {
                 if(expr.getLeftExpression() instanceof VariableExpression) {
 					Variable v = ((VariableExpression) expr.getLeftExpression()).getAccessedVariable();
 					if(!(v instanceof VariableExpression)) {
+                        ListOfExpressionsExpression exprList = new ListOfExpressionsExpression();
+
+                        Expression valueExpr = expr.getRightExpression();
+
+                        String varName = "$$var" + varId++;
+
+                        // assignment
+                        exprList.addExpression(new DeclarationExpression(
+                                new VariableExpression(varName),
+                                new Token(Types.ASSIGN, "=", expr.getLineNumber(), expr.getColumnNumber()),
+                                valueExpr
+                        ));
+
 						String attrName = v.getName();
 
 						Expression lhs;
@@ -103,10 +121,28 @@ public class AttrAssignmentAST implements ASTTransformation {
 									new ConstantExpression(attrName));
 						}
 
-						return new BinaryExpression(lhs, expr.getOperation(), expr.getRightExpression());
+                        exprList.addExpression(new TernaryExpression(
+                                new BooleanExpression(
+                                        new BinaryExpression(
+                                                new VariableExpression(varName),
+                                                new Token(Types.COMPARE_EQUAL, "==", expr.getLineNumber(), expr.getColumnNumber()),
+                                                new ConstantExpression(null)
+                                                )
+
+                                        ),
+                                        new BinaryExpression(new VariableExpression(varName), expr.getOperation(), new VariableExpression(varName)),
+                                        new BinaryExpression(lhs, expr.getOperation(), new VariableExpression(varName))
+
+
+                        ));
+
+
+                        return allowNullValues? new BinaryExpression(lhs, expr.getOperation(), expr.getRightExpression()) : exprList;
 					}
 				}
 			}
+
+
 			return expr;
 		}
 
@@ -119,10 +155,10 @@ public class AttrAssignmentAST implements ASTTransformation {
 		AnnotatedNode node = (AnnotatedNode) nodes[1];
 		if (node instanceof MethodNode) {
 			MethodNode methodNode = (MethodNode) node;
-			AttrVisitor visitor = new AttrVisitor(source);
+			AttrVisitor visitor = new AttrVisitor(source, false);
 			visitor.visitMethod(methodNode);
 		} else {
-			source.addError(new SyntaxException("Attribute block unimplemented for: ",
+			source.addError(new SyntaxException("Attribute block AST transformation unimplemented for: ",
 					node.getLineNumber(), node.getColumnNumber(), node.getLastLineNumber(), node.getLastColumnNumber()));
 		}
 
