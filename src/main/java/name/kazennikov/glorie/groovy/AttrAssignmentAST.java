@@ -25,8 +25,17 @@ import java.util.List;
  * String a = "foo"
  * target['a'] = "bar"
  * This is a special mode for attribute assignment.
+ *
+ * There is also a special type
+ * $foo = bar
+ * that transforms to:
+ * target.foo = bar
+ *
+ * This is needed to distinguish feature assignment from SymbolNode one
+ *
  * !NB
- * Rewriting is done for lhs of the assignemnt only:
+ *
+ * Rewriting is done for LHS of the assignment only:
  * String a = "foo"
  * b = a
  * will be rewritten as:
@@ -74,14 +83,17 @@ public class AttrAssignmentAST implements ASTTransformation {
 
 		public Expression rewrite(BinaryExpression expr) {
 			if(expr.getOperation().getType() == Types.ASSIGN) {
-				// rewrite left part
-				if(expr.getLeftExpression() instanceof VariableExpression) {
+
+                // rewrite left part
+
+                if(expr.getLeftExpression() instanceof VariableExpression) {
 					Variable v = ((VariableExpression) expr.getLeftExpression()).getAccessedVariable();
 					if(!(v instanceof VariableExpression)) {
 						String attrName = v.getName();
 
 						Expression lhs;
-						// $var = foo -> target.var = foo
+
+                        // $var = foo -> target.var = foo
 						if(attrName.startsWith("$")) {
 							lhs = new AttributeExpression(new VariableExpression("target", new ClassNode(SymbolSpan.class)), new ConstantExpression(attrName.substring(1)));
 						} else { // else, var = foo -> target.features[var] = foo
