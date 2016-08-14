@@ -56,7 +56,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
     CompilerConfiguration cc;
     GroovyClassLoader classLoader;
     ParserContext parserContext;
-    boolean printTableOnInit = false;
+    boolean printGLRTableOnInit = false;
 
     @Override
     public Resource init() throws ResourceInstantiationException {
@@ -75,7 +75,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             table = new GLRTable(grammar);
             table.buildGLRTable();
 
-            if(printTableOnInit) {
+            if(printGLRTableOnInit) {
                 table.print(new File("glrtable.txt"));
             }
 
@@ -306,7 +306,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 					grammar.post.exec(document, as, table, parser.roots);
                 } finally {
                     parser.clear();
-                        }
+                }
             }
         }
     }
