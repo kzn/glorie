@@ -136,9 +136,11 @@ public class CompiledGrammar {
             Production p = g.productions.get(prodId);
             int lhs = symbols.get(p.lhs);
             int[] rhs = new int[p.rhs.size()];
+
             for(int i = 0; i < p.rhs.size(); i++) {
                 rhs[i] = symbols.get(p.rhs.get(i));
             }
+
             rules[prodId] = new Rule(p, prodId, lhs, rhs);
         }
 
@@ -467,7 +469,7 @@ public class CompiledGrammar {
             post = new PostBaseScript.Simple();
         }
 
-        // gather all rhs actions of all rules
+        // gather all rhs actions from all rules
         actionGenerators = new RHSActionGenerator[grammar.productions.size()];
 
         for(int i = 0; i < grammar.productions.size(); i++) {
@@ -710,6 +712,9 @@ public class CompiledGrammar {
         }
     }
 
+    /**
+     * Compile predicates specified directly in grammar code (in code blocks)
+     */
     public void compileSourcePredicates() {
         for(int i = 0; i < predicates.size(); i++) {
             SymbolSpanPredicate p = predicates.get(i);
