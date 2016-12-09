@@ -279,6 +279,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
                 if(start < 0) {
                     start = -start - 1;
                 } else {
+                    // backoff to the first span starting from the same offset
                     while(start > 0) {
                         if(spans.get(start - 1).start != spans.get(start).start)
                             break;
