@@ -4,6 +4,9 @@ import gnu.trove.list.array.TIntArrayList;
 
 /**
  * Algorithm to resolve overlapping spans.
+ * The input spans must be sorted by:
+ * - increasing start offsets
+ * - decreasing span length (decreasing end offsets)
  * First, algorithm gathers groups of overlapping spans. A group can be processed
  * independently of other groups.
  *
