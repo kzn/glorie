@@ -140,7 +140,7 @@ public abstract class OverlapFilter {
 
             for(int i = 0; i < srcNodes.size(); i++) {
                 int node = srcNodes.get(i);
-                if(flags[node] == 0) {
+                if(flags[node] == UNPROCESSED) {
                     nodes.add(node);
                 }
             }
