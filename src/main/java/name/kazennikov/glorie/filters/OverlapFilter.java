@@ -17,10 +17,14 @@ import gnu.trove.list.array.TIntArrayList;
  */
 public abstract class OverlapFilter {
 
+    public static final int UNPROCESSED = 0;
+    public static final int RESOLVED = 1;
+    public static final int REMOVED = 2;
+
     // input sequence size
 	final int size;
 
-    // 2 - deleted
+    // 2 - removed
     // 1 - resolved
     // 0 - unprocessed (unresolved)
     final int[] flags;
@@ -102,12 +106,12 @@ public abstract class OverlapFilter {
 
 
             for(int i = 0; i < resolved.size(); i++) {
-                flags[resolved.get(i)] = 1;
+                flags[resolved.get(i)] = RESOLVED;
             }
 
             restNodes.resetQuick();
             for(int i = 0; i < nodes.size(); i++) {
-                if(flags[nodes.get(i)] == 0) {
+                if(flags[nodes.get(i)] == UNPROCESSED) {
                     restNodes.add(nodes.get(i));
                 }
             }
@@ -115,17 +119,17 @@ public abstract class OverlapFilter {
             computePairs(pairs, resolved, restNodes);
 
 
-            // delete overlapping
+            // delete overlapping nodes wrt resolved
             for(int i = 0; i < pairs.size(); i+= 2) {
                 int from = pairs.get(i);
                 int to = pairs.get(i + 1);
 
-                if(flags[from] == 1) {
-                    flags[to] = 2;
+                if(flags[from] == RESOLVED) {
+                    flags[to] = REMOVED;
                 }
 
-                if(flags[to] == 1) {
-                    flags[from] = 2;
+                if(flags[to] == RESOLVED) {
+                    flags[from] = REMOVED;
                 }
             }
 
