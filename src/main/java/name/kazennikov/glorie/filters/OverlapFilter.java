@@ -98,7 +98,7 @@ public abstract class OverlapFilter {
 
         TIntArrayList srcNodes = nodes;
         TIntArrayList restNodes = new TIntArrayList(nodes.size());
-        TIntArrayList pairs = new TIntArrayList(nodes);
+        TIntArrayList pairs = new TIntArrayList(nodes.size());
 
         while(!nodes.isEmpty()) {
             TIntArrayList resolved = select(nodes);
