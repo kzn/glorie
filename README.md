@@ -23,10 +23,10 @@ Rule: MonthDate
  
 JAPE is a powerful way to construct rules, however it has some important limitations:
 * Its power is limited by regular engine formalism. This is mitigated by introduction of 
-phases - a phase contains several rules that are applied independently of each other. Phases
-could be combined sequentially. 
+  phases - a phase contains several rules that are applied independently of each other. Phases
+  could be combined sequentially. 
 * CPSL lacks a programmatical way to assign features of newly created annotations. JAPE mitigates
-this by allowing Java code as scripting language Right-hand side of the rule
+  this by allowing Java code as scripting language Right-hand side of the rule
 
 
  
