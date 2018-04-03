@@ -22,11 +22,29 @@ Rule: MonthDate
 ```
  
 JAPE is a powerful way to construct rules, however it has some important limitations:
-* Its power is limited by regular engine formalism. This is mitigated by introduction of 
+# Its power is limited by regular engine formalism. This is mitigated by introduction of 
   phases - a phase contains several rules that are applied independently of each other. Phases
   could be combined sequentially. 
-* CPSL lacks a programmatical way to assign features of newly created annotations. JAPE mitigates
+# CPSL lacks a programmatical way to assign features of newly created annotations. JAPE mitigates
   this by allowing Java code as scripting language Right-hand side of the rule
 
+## Grammar
+```
+# Grammar header block
+Grammar: GrammarName // grammar name
+Input: Token MorphToken // list of input annotations
+output: Person Organization // list of output non-terminals, optional 
+Options: option1=value1, option2=value2 ... // options, optional
+Start: ?  # optional
+Context: Sentence // context annotation, optional
+# optional
+Imports: {
+ // java imports classes/methods
+}
 
+
+
+
+
+```
  
