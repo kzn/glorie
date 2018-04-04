@@ -35,7 +35,7 @@ Grammar: GrammarName // grammar name
 Input: Token MorphToken // list of input annotations
 output: Person Organization // list of output non-terminals, optional 
 Options: option1=value1, option2=value2 ... // options, optional
-Start: ?  # optional
+Start: ?  # grammar root non-terminal
 Context: Sentence // context annotation, optional
 # optional
 Imports: {
