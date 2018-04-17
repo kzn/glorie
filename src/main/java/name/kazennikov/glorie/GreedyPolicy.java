@@ -70,7 +70,7 @@ public interface GreedyPolicy {
      * The check is defined as follows:
      * 1. ACCEPT all symbols that end before the maximal reduction
      * 2. REMOVE all symbols of the policy type that start after the current position
-     * 3. allow co-staring greedy symbols from current position
+     * 3. allow co-starting greedy symbols from current position
      * 4. REMOVE the symbol node if all possible parses are filtered out.
      *
      *
