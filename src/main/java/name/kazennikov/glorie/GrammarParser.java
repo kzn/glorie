@@ -611,21 +611,38 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     public Grammar visitHeader(GLORIEParser.HeaderContext ctx) {
         grammar.name = ctx.name().ident().getText();
 
-        if(ctx.input() != null && !ctx.input().isEmpty()) {
-            if(ctx.input().size() > 1)
-                throw new IllegalStateException("Input specified more than once in the grammar");
+        if(ctx.start() == null || ctx.start().isEmpty()) {
+            throw new IllegalStateException("Grammar start not specified");
+        }
 
-            for(GLORIEParser.IdentContext identContext : ctx.input().get(0).ident()) {
-                grammar.input.add(identContext.getText());
+        if(ctx.start().size() > 1) {
+            throw new IllegalStateException("More than one grammar start specified");
+        }
+
+
+        if(ctx.input() == null || ctx.input().isEmpty()) {
+            logger.info("Input not specified, using default annotation types: [Token, Lookup]");
+            grammar.input.add("Token");
+            grammar.output.add("Lookup");
+        } else {
+            for(GLORIEParser.InputContext inputContext : ctx.input()) {
+                for(GLORIEParser.IdentContext identContext : inputContext.ident()) {
+                    grammar.input.add(identContext.getText());
+                }
             }
         }
 
-        if(ctx.output() != null && !ctx.output().isEmpty()) {
-            if(ctx.output().size() > 1)
-                throw new IllegalStateException("Output specified more than once in the grammar");
 
-            for(GLORIEParser.IdentContext identContext : ctx.output().get(0).ident()) {
-                grammar.output.add(identContext.getText());
+
+
+        if(ctx.output() == null || ctx.output().isEmpty()) {
+            logger.info("Output Non-Terminals not specified, using grammar root only");
+            grammar.output.add(ctx.start().get(0).ident().getText());
+        } else {
+            for(GLORIEParser.OutputContext outputContext : ctx.output()) {
+                for(GLORIEParser.IdentContext identContext : outputContext.ident()) {
+                    grammar.output.add(identContext.getText());
+                }
             }
         }
 
@@ -640,23 +657,33 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             if(ctx.opts().size() > 1)
                 throw new IllegalStateException("Options specified more than once in the grammar");
 
-            //grammar.options = new OptsVisitor().visitOpts(ctx.opts(0));
+            grammar.options = new OptsVisitor().visitOpts(ctx.opts(0));
         }
 
         if(ctx.context() != null) {
             if(ctx.context().size() == 1) {
                 grammar.context = ctx.context(0).ident().getText();
+            } else {
+                throw new IllegalStateException("Grammar context specified more than once");
             }
         }
 
         if(ctx.importBlock() != null) {
-            if(ctx.importBlock().size() == 1) {
-                GLORIEParser.JavaCodeContext block = ctx.importBlock(0).javaCode();
+            StringBuilder sb = new StringBuilder();
+            sb.append(defaultImports);
+            sb.append("\n");
+
+            for(GLORIEParser.ImportBlockContext importContext : ctx.importBlock()) {
+                GLORIEParser.JavaCodeContext block = importContext.javaCode();
                 int start = block.start.getStartIndex();
                 int end = block.stop.getStopIndex();
                 String source = GrammarParser.this.source.substring(start, end);
-                grammar.imports = defaultImports + "\n" + source.substring(1, source.length() - 1);
+                sb.append(source.substring(1, source.length() - 1));
+                sb.append("\n");
             }
+
+            grammar.imports = sb.toString();
+
         }
 
         return super.visitHeader(ctx);
