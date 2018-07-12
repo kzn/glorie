@@ -11,10 +11,9 @@ import java.util.Objects;
 * Symbol span. A core concept of the GLR parser.
  *
  * A Symbol span is a continuous span in the source documents extended with type and features.
- * The Symbol span is used to map some span of text to a symbol (either terminal or non-terminal)
- * in terms of GLR parser.
+ * It maps a span of text to a symbol (either terminal or non-terminal) in terms of GLR parser.
  *
- * The symbol span consists of:
+ * A symbol span is formed by:
  * * symbol - an identifier of the type used by the GLR parser
  * * start - start offset
  * * end - end offset
@@ -80,7 +79,6 @@ public class SymbolSpan {
     /**
      * Get all parents of the span. Returns the parent list from the direct parent.
      * Excludes the span itself
-     * @return
      */
     public List<SymbolSpan> parents() {
         List<SymbolSpan> parents = new ArrayList<>();
@@ -116,7 +114,6 @@ public class SymbolSpan {
     /**
      * Check this span and given span are coextensive
      * @param span span to check against
-     * @return
      */
     public boolean coextensive(SymbolSpan span) {
         return start == span.start && end == span.end;
@@ -125,7 +122,6 @@ public class SymbolSpan {
     /**
      * Check if this span contains given span
      * @param span span to check against
-     * @return
      */
     public boolean contains(SymbolSpan span) {
         return start <= span.start && end >= span.end;
@@ -134,7 +130,6 @@ public class SymbolSpan {
     /**
      * Check if this span is within given span
      * @param span span to check against
-     * @return
      */
     public boolean within(SymbolSpan span) {
         return span.start <= start && span.end >= end;
@@ -143,7 +138,6 @@ public class SymbolSpan {
     /**
      * Check if this span is left of given span
      * @param span span to check against
-     * @return
      */
     public boolean leftOf(SymbolSpan span) {
         return start < span.start;
@@ -152,7 +146,6 @@ public class SymbolSpan {
     /**
      * Check if this span is right of given span
      * @param span span to check against
-     * @return
      */
     public boolean rightOf(SymbolSpan span) {
         return span.start < start;
@@ -161,7 +154,6 @@ public class SymbolSpan {
     /**
      * Check if this span overlaps with given span
      * @param span span to check against
-     * @return
      */
     public boolean overlaps(SymbolSpan span) {
         return (start <= span.start && end >= span.start)
@@ -171,7 +163,6 @@ public class SymbolSpan {
 
 	/**
 	 * Length of span in characters
-	 * @return
 	 */
 	public int length() {
 		return end - start;
