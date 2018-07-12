@@ -5,7 +5,7 @@ package name.kazennikov.glorie;
  */
 public class StateNode extends StackNode {
 	public final int state;
-	boolean active;	// indicate that the node is in activeStates list
+	public boolean active;	// indicate that the node is in activeStates list
 
 
 	public StateNode(int state) {
