@@ -9,7 +9,7 @@ import java.util.List;
  * Represents a symbol occurrence in the GLR Grammar rules.
  *
  * A symbol can be either a terminal or non-terminal. A terminal symbol denotes an annotation in the
- * input annotation list. A non terminal symbol is built during GLR parsing.
+ * input annotation list. A non-terminal symbol is constructed during GLR parsing.
  * If the symbol is non-terminal, then the 'nt' field is true.
  *
  * A symbol consists of the id and that attached predicates, so
