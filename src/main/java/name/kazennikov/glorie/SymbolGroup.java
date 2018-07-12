@@ -1,15 +1,15 @@
 package name.kazennikov.glorie;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Objects;
 
 /**
  * A base class for a group of symbols in an RHS of a production
  */
 public abstract class SymbolGroup extends Symbol {
-	List<Symbol> syms = new ArrayList<>();
+	protected List<Symbol> syms = new ArrayList<>();
 
     public SymbolGroup() {
         super(null, true, null);
@@ -22,7 +22,7 @@ public abstract class SymbolGroup extends Symbol {
 	public static class Or extends SymbolGroup {
 		@Override
 		public String toString() {
-			return Objects.toStringHelper(this)
+			return MoreObjects.toStringHelper(this)
 					.add("syms", syms)
 					.toString();
 		}
@@ -71,7 +71,7 @@ public abstract class SymbolGroup extends Symbol {
 		
 		@Override
 		public String toString() {
-			return Objects.toStringHelper(this)
+			return MoreObjects.toStringHelper(this)
 					.add("min", min)
 					.add("max", max)
 					.add("syms", syms)
@@ -80,7 +80,7 @@ public abstract class SymbolGroup extends Symbol {
 	}
 
 	/**
-	 * Simple group that represents a symbol sequence
+	 * Simple group that represents a sequence of symbols
 	 */
     public static class Simple extends SymbolGroup {
 
