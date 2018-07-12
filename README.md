@@ -70,8 +70,15 @@ Imports: {
 ```
 
 ### Grammar Header
-Grammar header describes basic g
+Grammar header describes basic
 ### Rule Syntax
+### RHS scripting
+### Preprocessing and Postprocessing defaults
+
+## GloRIE internals
+### Rule Application modes
+### Preprocessing and Postprocessing scripting
+
 
 
 
