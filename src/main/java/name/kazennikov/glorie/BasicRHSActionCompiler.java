@@ -4,8 +4,6 @@ import name.kazennikov.glorie.groovy.AttrAssignment;
 import name.kazennikov.logger.Logger;
 
 import java.io.File;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Implements groovy-compilation of RHS blocks
@@ -15,12 +13,6 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 
 
 	Compiler compiler;
-	/**
-	 * Cardinality of the action class set. Used for ensuring class name
-	 * uniqueness.
-	 */
-	private static AtomicInteger actionClassNumber = new AtomicInteger();
-
 
 	/**
 	 * Package name for action classes. It's called a "dir name" because
