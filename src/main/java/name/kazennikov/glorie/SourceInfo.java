@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple class to store and use the mapping between Java and Jape
- * source code for error reporting.
+ * A simple class to store and use the mapping between Groovy RHS code and compiled class for error reporting.
+ * This is a slightly modified copy of {@link gate.jape.SourceInfo}
  */
 public class SourceInfo {
 
@@ -44,14 +44,15 @@ public class SourceInfo {
     }
 
     public String addBlock(String previousCode, String codeBlock) {
-        if (!codeBlock.startsWith("// Source:")) return codeBlock;
+        if(!codeBlock.startsWith("// Source:")) {
+            return codeBlock;
+        }
 
         String info = codeBlock.substring(10, codeBlock.indexOf("\n")).trim();
         String code = codeBlock.substring(codeBlock.indexOf("\n") + 1);
 
-        String japeURL = info.substring(0, info.lastIndexOf(":"));
-        int lineNumber = Integer
-                .parseInt(info.substring(info.lastIndexOf(":") + 1));
+        String grammarURL = info.substring(0, info.lastIndexOf(":"));
+        int lineNumber = Integer.parseInt(info.substring(info.lastIndexOf(":") + 1));
 
         int startLine = previousCode.split("\n").length + 1;
         int endLine = startLine + code.split("\n").length;
@@ -59,16 +60,15 @@ public class SourceInfo {
         int startOffset = previousCode.length();
         int endOffset = previousCode.length() + code.length();
 
-        blocks.add(new BlockInfo(japeURL, lineNumber, startLine, endLine,
-                startOffset, endOffset));
+        blocks.add(new BlockInfo(grammarURL, lineNumber, startLine, endLine, startOffset, endOffset));
 
         return code;
     }
 
     public String getSource(String source, int javaLineNumber) {
-        for (BlockInfo info : blocks) {
-            if (info.contains(javaLineNumber)) {
-                return info.getSource(source, info.getJapeLineNumber(javaLineNumber));
+        for(BlockInfo info : blocks) {
+            if(info.contains(javaLineNumber)) {
+                return info.getSource(source, info.getGrammarSourceLine(javaLineNumber));
             }
         }
 
@@ -76,10 +76,12 @@ public class SourceInfo {
     }
 
     public StackTraceElement getStackTraceElement(int javaLineNumber) {
-        for (BlockInfo info : blocks) {
-            StackTraceElement japeSTE = info.getStackTraceElement(javaLineNumber);
+        for(BlockInfo info : blocks) {
+            StackTraceElement grammarSTE = info.getStackTraceElement(javaLineNumber);
 
-            if (japeSTE != null) return japeSTE;
+            if(grammarSTE != null) {
+                return grammarSTE;
+            }
         }
 
         return null;
@@ -93,26 +95,27 @@ public class SourceInfo {
      * @param t the Throwable to enhance with Jape source information
      */
     public void enhanceTheThrowable(Throwable t) {
-        if (t.getCause() != null) {
+        if(t.getCause() != null) {
             enhanceTheThrowable(t.getCause());
         }
 
-        List<StackTraceElement> stack = new ArrayList<StackTraceElement>();
+        List<StackTraceElement> stack = new ArrayList<>();
 
-        for (StackTraceElement ste : t.getStackTrace()) {
-            if (ste.getClassName().equals(className)) {
+        for(StackTraceElement ste : t.getStackTrace()) {
+            if(ste.getClassName().equals(className)) {
 
-                StackTraceElement japeSTE = null;
+                StackTraceElement grammarSTE = null;
 
-                if (ste.getLineNumber() >= 0) {
+                if(ste.getLineNumber() >= 0) {
                     for(BlockInfo info : blocks) {
-                        japeSTE = info.getStackTraceElement(ste.getLineNumber());
+                        grammarSTE = info.getStackTraceElement(ste.getLineNumber());
 
-                        if(japeSTE != null)
+                        if(grammarSTE != null)
                             break;
                     }
                 }
-                stack.add(japeSTE != null ? japeSTE : ste);
+
+                stack.add(grammarSTE != null ? grammarSTE : ste);
             } else {
                 stack.add(ste);
             }
@@ -122,18 +125,18 @@ public class SourceInfo {
     }
 
     private class BlockInfo {
-        String japeURL;
+        String grammarURL;
 
         int japeLine;
 
-        int startLine, endLine;
+        int startLine;
+        int endLine;
 
-        int startOffset, endOffset;
+        int startOffset;
+        int endOffset;
 
-        BlockInfo(String japeURL, int japeLine, int startLine, int endLine,
-                  int startOffset, int endOffset) {
-
-            this.japeURL = japeURL;
+        BlockInfo(String grammarURL, int japeLine, int startLine, int endLine, int startOffset, int endOffset) {
+            this.grammarURL = grammarURL;
             this.japeLine = japeLine;
             this.startLine = startLine;
             this.endLine = endLine;
@@ -156,19 +159,22 @@ public class SourceInfo {
             return lines[line - japeLine];
         }
 
-        public int getJapeLineNumber(int javaLineNumber) {
-            if (!contains(javaLineNumber)) return -1;
+        public int getGrammarSourceLine(int javaLineNumber) {
+            if(!contains(javaLineNumber)) {
+                return -1;
+            }
 
             return japeLine + (javaLineNumber - startLine);
         }
 
         public StackTraceElement getStackTraceElement(int javaLineNumber) {
-            int japeLineNumber = getJapeLineNumber(javaLineNumber);
+            int lineNumber = getGrammarSourceLine(javaLineNumber);
 
-            if (japeLineNumber == -1) return null;
+            if(lineNumber == -1) {
+                return null;
+            }
 
-            return new StackTraceElement(phaseName, sectionName, japeURL,
-                    japeLineNumber);
+            return new StackTraceElement(phaseName, sectionName, grammarURL, lineNumber);
         }
 
         public String getSource(String source) {
