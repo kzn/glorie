@@ -40,28 +40,28 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
     private static final Logger logger = Logger.getLogger();
 
 
-    CompiledGrammar grammar;
-    GLRTable table;
-    GLRParser parser;
-    File grammarFile;
-    String asName;
+    protected CompiledGrammar grammar;
+    protected GLRTable table;
+    protected GLRParser parser;
+    protected File grammarFile;
+    protected String asName;
 
-    List<String> instanceExtensionClasses = new ArrayList<>();
-    List<String> staticExtensionClasses = new ArrayList<>();
-    List<String> globalExtensionClasses = new ArrayList<>();
-    List<String> groovyClassPath;
+    protected List<String> instanceExtensionClasses = new ArrayList<>();
+    protected List<String> staticExtensionClasses = new ArrayList<>();
+    protected List<String> globalExtensionClasses = new ArrayList<>();
+    protected List<String> groovyClassPath;
 
-    String parserContextClassName;
+    protected String parserContextClassName;
 
-    CompilerConfiguration cc;
-    GroovyClassLoader classLoader;
-    ParserContext parserContext;
-    boolean printGLRTableOnInit = false;
+    protected CompilerConfiguration cc;
+    protected GroovyClassLoader classLoader;
+    protected ParserContext parserContext;
+    protected boolean printGLRTableOnInit = false;
 
     @Override
     public Resource init() throws ResourceInstantiationException {
         if(grammarFile == null)
-            throw new ResourceInstantiationException("Grammar file is null");
+            throw new ResourceInstantiationException("Grammar file not specified");
         try {
             classLoader = initGroovyClassLoader();
             parserContext = initParserContext();
