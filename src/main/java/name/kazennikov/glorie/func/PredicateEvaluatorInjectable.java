@@ -1,9 +1,12 @@
 package name.kazennikov.glorie.func;
 
+import name.kazennikov.features.Function;
+
 /**
- * Created on 3/26/16.
+ * Marker interface indicating that a predicate expects injection
+ * of {@link name.kazennikov.glorie.SymbolSpanPredicateEvaluator} as its first argument
  *
  * @author Anton Kazennikov
  */
-public interface PredicateEvaluatorInjectable {
+public interface PredicateEvaluatorInjectable extends Function {
 }
