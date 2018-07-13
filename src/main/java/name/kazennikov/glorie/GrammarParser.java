@@ -1,7 +1,6 @@
 package name.kazennikov.glorie;
 
 import name.kazennikov.features.*;
-import name.kazennikov.glorie.func.Evaluator;
 import name.kazennikov.glorie.func.FeatureFunctions;
 import name.kazennikov.logger.Logger;
 
@@ -298,9 +297,9 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
                 vv = new MemoizedValue(FeatureFunctions.SIMPLE_FEATURE, new Values.Var(), new ArrayList<>(Arrays.asList(v)));
             }
 
-            Evaluator eval = new Evaluator(parserContext.optimize(vv));
+            name.kazennikov.glorie.func.Evaluator eval = new name.kazennikov.glorie.func.Evaluator(parserContext.optimize(vv));
 
-            return parserContext.getFeaturePredicate(op, new FeatureAccessor.EvaluatorAccessor(eval), o);
+            return parserContext.getFeaturePredicate(op, new FeatureAccessor.Evaluator(eval), o);
         }
 
         @Override
@@ -330,7 +329,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
 				MemoizedValue mv = new MemoizedValue(new FeatureFunctions.SymbolSpanPredicateFunction(pred), new Values.Var(), args);
 
-				return new SymbolSpanPredicates.MemoizedValuePredicate(new Evaluator(parserContext.optimize(mv)));
+				return new SymbolSpanPredicates.MemoizedValuePredicate(new name.kazennikov.glorie.func.Evaluator(parserContext.optimize(mv)));
 
 			}
 
@@ -342,7 +341,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
                 vv = new MemoizedValue(Functions.IDENTITY, new Values.Var(), new ArrayList<>(Arrays.asList(v)));
             }
 
-            Evaluator eval = new Evaluator(parserContext.optimize(vv));
+            name.kazennikov.glorie.func.Evaluator eval = new name.kazennikov.glorie.func.Evaluator(parserContext.optimize(vv));
 
             return new SymbolSpanPredicates.MemoizedValuePredicate(eval);
         }
@@ -353,7 +352,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             Symbol s = new RhsVisitor().visitSimpleMatcher(ctx.simpleMatcher());
             int root = ctx.root() == null? 0 : ctx.root().size();
 
-            FeatureAccessor fa = root == 0? new FeatureAccessor.AnnotationAccessor() : new FeatureAccessor.HeadAnnotationAccessor(root);
+            FeatureAccessor fa = root == 0? new FeatureAccessor.Self() : new FeatureAccessor.HeadAnnotation(root);
 
             return parserContext.getContextPredicate(op, fa, s.pred);
         }
@@ -414,7 +413,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
                     auxPreds.add(aux.pred);
                 }
 
-                SymbolSpanPredicate pred = new SymbolSpanPredicates.StartsWith(new FeatureAccessor.AnnotationAccessor(),
+                SymbolSpanPredicate pred = new SymbolSpanPredicates.StartsWith(new FeatureAccessor.Self(),
                         new SymbolSpanPredicates.TypePredicate(aux.id, auxPreds));
 
 

@@ -1,21 +1,22 @@
 package name.kazennikov.glorie;
 
-import name.kazennikov.glorie.func.Evaluator;
-
 import java.util.Objects;
 
 /**
- * A Feature Accessor is used to retrieve some value object from given symbol span.
+ * A Feature Accessor retrieves a value from a symbol span.
  *
- * A Feature can be an "inner" feature of the symbol span, or could be some value
- * that is computed from the span and the underlying document
+ * A Feature can be an "real" feature of the symbol span, or could be some computed value on
+ * the span and the underlying document
  */
 public interface FeatureAccessor {
+
+
     /**
-     * Get feature value from given symbol span.
+     * Get value from a symbol span.
      *
      * The input data could be used to get some data that is not associated
      * with the symbol span directly. For example, the document text
+     *
      * @param evaluator evaluator
      * @param span target symbol span
      * @return value
@@ -26,7 +27,7 @@ public interface FeatureAccessor {
     /**
      * Simple accessor that returns the span itself
      */
-    public static class AnnotationAccessor implements FeatureAccessor {
+    public static class Self implements FeatureAccessor {
 
         @Override
         public SymbolSpan get(SymbolSpanPredicateEvaluator evaluator, SymbolSpan span) {
@@ -40,7 +41,7 @@ public interface FeatureAccessor {
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof AnnotationAccessor;
+            return o instanceof Self;
         }
     }
 
@@ -50,10 +51,10 @@ public interface FeatureAccessor {
      * n-th head that it retrieves the
      * head of the head of the head and so on n times.
      */
-    public static class HeadAnnotationAccessor implements FeatureAccessor {
+    public static class HeadAnnotation implements FeatureAccessor {
         int head;
 
-        public HeadAnnotationAccessor(int head) {
+        public HeadAnnotation(int head) {
             this.head = head;
         }
 
@@ -73,7 +74,7 @@ public interface FeatureAccessor {
                 return false;
             }
 
-            HeadAnnotationAccessor that = (HeadAnnotationAccessor) o;
+            HeadAnnotation that = (HeadAnnotation) o;
 
             if(head != that.head) {
                 return false;
@@ -92,11 +93,11 @@ public interface FeatureAccessor {
      * Accessor the the n-th head feature. It retrieves the n-th head first, and then
      * if it is not null retrieves specified value using the inner feature accessor
      */
-    public static class HeadFeatureAccessor implements FeatureAccessor {
+    public static class HeadFeature implements FeatureAccessor {
         int head;
         FeatureAccessor base;
 
-        public HeadFeatureAccessor(int head, FeatureAccessor base) {
+        public HeadFeature(int head, FeatureAccessor base) {
             this.head = head;
             this.base = base;
         }
@@ -295,11 +296,11 @@ public interface FeatureAccessor {
     /**
      * Feature accessor evaluates given complex function on symbol span and returns its result
      */
-    public static class EvaluatorAccessor implements FeatureAccessor {
+    public static class Evaluator implements FeatureAccessor {
 
-        Evaluator eval;
+        name.kazennikov.glorie.func.Evaluator eval;
 
-        public EvaluatorAccessor(Evaluator eval) {
+        public Evaluator(name.kazennikov.glorie.func.Evaluator eval) {
             this.eval = eval;
         }
 
@@ -312,7 +313,7 @@ public interface FeatureAccessor {
         public boolean equals(Object o) {
             if(this == o) return true;
             if(o == null || getClass() != o.getClass()) return false;
-            EvaluatorAccessor that = (EvaluatorAccessor) o;
+            Evaluator that = (Evaluator) o;
             return Objects.equals(eval, that.eval);
         }
 
