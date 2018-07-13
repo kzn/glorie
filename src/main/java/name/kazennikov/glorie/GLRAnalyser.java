@@ -389,6 +389,15 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             copy.instanceExtensionClasses = instanceExtensionClasses;
             copy.parserContext = parserContext;
 
+            copy.grammar = grammar.copy();
+            copy.table = new GLRTable(copy.grammar);
+            copy.parser = new GLRParser(table);
+            copy.cc = cc;
+            copy.classLoader = classLoader;
+            copy.parserContext = parserContext;
+            copy.printGLRTableOnInit = printGLRTableOnInit;
+
+
 
         /*FIXME: еще предикаты надо скопировать
         copy.classLoader = classLoader;
