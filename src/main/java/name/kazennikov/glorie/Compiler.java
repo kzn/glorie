@@ -21,7 +21,7 @@ public interface Compiler {
 
 		public Class<?> result() throws Exception {
 			if(!compiler.hasCompiled())
-				throw new IllegalStateException("compile() has not been called before result retrieval");
+				throw new IllegalStateException("compile() has not been called yet");
 
 			return compiler.getClass(className);
 		}
