@@ -7,7 +7,7 @@ import gate.creole.ExecutionException;
 import java.util.List;
 
 /**
- * Created by kzn on 6/21/15.
+ * Basic Groovy extension functions
  */
 public class GroovyExtensions {
 
