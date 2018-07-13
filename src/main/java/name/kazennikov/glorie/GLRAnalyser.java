@@ -91,7 +91,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         if(parserContext != null)
             return parserContext;
 
-        if(parserContextClassName == null) {
+        if(parserContextClassName == null || parserContextClassName.isEmpty()) {
             return new BasicParserContext();
         }
 
@@ -119,6 +119,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             groovyClassPath.addAll(this.groovyClassPath);
         }
 
+        // look into basename(grammarFile)/groovy as groovy class path by default
         groovyClassPath.add(new File(grammarFile.getParent(), "groovy").getAbsolutePath());
 
 

@@ -35,7 +35,7 @@ public class RangeRewriter implements ProductionRewriter {
 		if(p.rhs.size() == 1 && (p.rhs.get(0) instanceof SymbolGroup.Range)) {
 			List<Production> l = new ArrayList<>();
 			SymbolGroup.Range r = (SymbolGroup.Range) p.rhs.get(0);
-			Symbol baseLHS = g.makeSynthNT(p.sourceLine);
+			Symbol baseLHS = g.makeSynthNT(p.lhs.id, p.sourceLine);
 			Production base = new Production(p, baseLHS, new ArrayList<>(r.syms), true, null, null, 1.0, false);
 			l.add(base);
 

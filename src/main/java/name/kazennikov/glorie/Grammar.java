@@ -91,6 +91,12 @@ public class Grammar {
     	return nt;
     }
 
+    public Symbol makeSynthNT(String baseRHS, int lineNum) {
+        String name = String.format("__%s_%d_%05d", baseRHS, lineNum, ++nextSynthProductionId);
+        Symbol nt = new Symbol(name, true);
+        return nt;
+    }
+
     public Symbol makeSynthTerminal() {
         String name = makeTerminalId();
         Symbol sym = new Symbol(name, false);
@@ -497,7 +503,7 @@ public class Grammar {
 
 				if(index == srcSym.size()) {
 					srcSym.add(s);
-					Symbol dest = makeSynthNT(p.sourceLine);
+					Symbol dest = makeSynthNT(p.lhs.id, p.sourceLine);
 					dstSym.add(dest);
 					prods.add(new Production(p.parent, dest, Arrays.asList(s), true, null, null, 1.0, false));
 				}
