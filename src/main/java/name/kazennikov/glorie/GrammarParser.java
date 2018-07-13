@@ -646,21 +646,24 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             }
         }
 
-        if(ctx.start() != null) {
-            if(ctx.start().size() > 1)
+        if(ctx.start() != null && !ctx.start().isEmpty()) {
+            if(ctx.start().size() > 1) {
                 throw new IllegalStateException("Start specified more than once in the grammar");
+            }
 
             grammar.start = new Symbol(ctx.start().get(0).ident().getText(), true);
+        } else {
+            throw new IllegalStateException("Grammar start not specified");
         }
 
-        if(ctx.opts() != null) {
+        if(ctx.opts() != null && !ctx.opts().isEmpty()) {
             if(ctx.opts().size() > 1)
                 throw new IllegalStateException("Options specified more than once in the grammar");
 
             grammar.options = new OptsVisitor().visitOpts(ctx.opts(0));
         }
 
-        if(ctx.context() != null) {
+        if(ctx.context() != null && !ctx.context().isEmpty()) {
             if(ctx.context().size() == 1) {
                 grammar.context = ctx.context(0).ident().getText();
             } else {
