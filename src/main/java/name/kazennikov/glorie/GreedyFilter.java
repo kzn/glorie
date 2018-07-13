@@ -6,10 +6,10 @@ import java.util.List;
 /**
  * Production greediness filter.
  *
- * The filter is applied after all possible reductions at given position are computed.*
+ * The filter is applied after all possible reductions at given position are computed.
  * It deletes all parses that conflict with performed greedy reduction.
 
- * The filter simultaneously applies all greedy policies. A a parse tree state/node is valid
+ * The filter simultaneously applies all present greedy policies. A a parse tree state/node is valid
  * if it is accepted by all greedy policies. In all other cases the state/node is considered invalid
  * and all node/states that are derived from this state/node are considered invalid too.
  *
@@ -18,7 +18,7 @@ import java.util.List;
  * 1. pending shifts of the current position
  * 2. computed root nodes
  * 3. all 'word' positions for current one. It will filter out all nodes built by conflicting productions
- * at earlier stages of parsing as the input is a lattice, not a sequence of symbols.
+ *    at earlier stages of parsing as the input is a lattice, not a sequence of symbols.
  *
  *
  * @author Anton Kazennikov
