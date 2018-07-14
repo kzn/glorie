@@ -202,7 +202,7 @@ public class CompiledGrammar {
 
         logger.info("Grammar has %d productions with %d symbols (%d terminals)",
                 rules.length, symbols.size(), terminals.size());
-        logger.info("Using %d distict type terminal evaluators", g.nextSynthTerminalId);
+        logger.info("Using %d distinct type terminal evaluators", g.nextSynthTerminalId);
         logger.info("Max # evaluators for single type: %d", maxSynthSize);
 
 
@@ -538,7 +538,7 @@ public class CompiledGrammar {
     }
 
     /**
-     * Compile the POST block
+     * Compile the code blocks
      */
     public void compileCode() throws Exception {
         SourceInfo sourceInfo = new SourceInfo(grammar.name, "CODE");
@@ -553,7 +553,7 @@ public class CompiledGrammar {
         try {
             grammarCode = groovyClassLoader.parseClass(src.toString(), grammar.name + "_code.groovy").newInstance();
         } catch(Exception e) {
-            logger.error("Error while compiling POST block of grammar %s", e, grammar.name);
+            logger.error("Error while compiling code blocks of grammar %s", e, grammar.name);
             throw e;
         }
     }
