@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by kzn on 6/27/15.
+ * Flattens SymbolGroups
+ * A -> B (C (D E)) F => A -> B (C D E F)
+ * A -> B (C | D | (E | F)) => A -> B (C | D | E | F)
  */
 public class FlattenProductionRewriter implements ProductionRewriter {
 
