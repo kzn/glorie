@@ -79,7 +79,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             RHSAction action = grammar.macros.get(ctx.ident().getText());
 
             if(action == null) {
-                logger.error("Referenced missing macro at %s:%d, macro=%s", baseURL, ctx.start.getLine(), ctx.ident().getText());
+                logger.error("Referenced undefined macro at %s:%d, macro=%s", baseURL, ctx.start.getLine(), ctx.ident().getText());
             }
 
             return action;
@@ -106,7 +106,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     }
 
     /**
-     * Check is symbol type is non-terminal
+     * Check if symbol is a non-terminal
      * @param type symbol span type
      * @return true if is non-terminal
      */
@@ -349,7 +349,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         @Override
         public SymbolSpanPredicate visitRecursiveSpec(GLORIEParser.RecursiveSpecContext ctx) {
             String op = ctx.op().getText();
-            Symbol s = new RhsVisitor().visitSimpleMatcher(ctx.simpleMatcher());
+            Symbol s = new RHSVisitor().visitSimpleMatcher(ctx.simpleMatcher());
             int root = ctx.root() == null? 0 : ctx.root().size();
 
             FeatureAccessor fa = root == 0? new FeatureAccessor.Self() : new FeatureAccessor.HeadAnnotation(root);
@@ -362,7 +362,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     /**
      * Parser for whole RHS of a GLR rule
      */
-    public class RhsVisitor extends GLORIEBaseVisitor<Symbol> {
+    public class RHSVisitor extends GLORIEBaseVisitor<Symbol> {
 
         @Override
         public Symbol visitRhs(GLORIEParser.RhsContext ctx) {
@@ -622,7 +622,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         if(ctx.input() == null || ctx.input().isEmpty()) {
             logger.info("Input not specified, using default annotation types: [Token, Lookup]");
             grammar.input.add("Token");
-            grammar.output.add("Lookup");
+            grammar.input.add("Lookup");
         } else {
             for(GLORIEParser.InputContext inputContext : ctx.input()) {
                 for(GLORIEParser.IdentContext identContext : inputContext.ident()) {
@@ -635,7 +635,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
 
         if(ctx.output() == null || ctx.output().isEmpty()) {
-            logger.info("Output Non-Terminals not specified, using grammar root only");
+            logger.info("Output Non-terminals not specified, using grammar root as output");
             grammar.output.add(ctx.start().get(0).ident().getText());
         } else {
             for(GLORIEParser.OutputContext outputContext : ctx.output()) {
@@ -680,7 +680,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
                 int start = block.start.getStartIndex();
                 int end = block.stop.getStopIndex();
                 String source = GrammarParser.this.source.substring(start, end);
-                sb.append(source.substring(1, source.length() - 1));
+                sb.append(source, 1, source.length() - 1);
                 sb.append("\n");
             }
 
@@ -731,7 +731,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     public Grammar visitProduction(GLORIEParser.ProductionContext ctx) {
         Symbol lhs = new Symbol(ctx.lhs().ident().getText(), true);
 
-        RhsVisitor rhsVisitor = new RhsVisitor();
+        RHSVisitor rhsVisitor = new RHSVisitor();
         SymbolGroup rhs = (SymbolGroup) rhsVisitor.visitRhs(ctx.rhs());
 
         ActionVisitor actionVisitor = new ActionVisitor();
