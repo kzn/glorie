@@ -591,7 +591,6 @@ public class CompiledGrammar {
         }
     }
 
-    // FIXME: eval predicates must be copied, else there is a possible state sharing
     public CompiledGrammar copy() throws Exception {
         CompiledGrammar copy = new CompiledGrammar();
         copy.grammar = grammar;
