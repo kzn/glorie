@@ -44,6 +44,11 @@ public class Evaluator {
 		this.f = minimize(rewrite(f));
 	}
 
+	public Evaluator(Evaluator src) {
+	    this.rewriters = src.rewriters;
+	    this.f = minimize(rewrite(src.f.copy()));
+    }
+
 	public Evaluator(MemoizedValue f) {
 		this(null, null, f);
 	}
@@ -168,6 +173,10 @@ public class Evaluator {
 
 		return get(new MemoizedValue(f.getFeature(), new Values.Var(), args));
 	}
+
+	public Evaluator copy() {
+	    return new Evaluator(this);
+    }
 
 
 }
