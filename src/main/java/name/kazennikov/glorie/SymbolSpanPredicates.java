@@ -30,6 +30,11 @@ public class SymbolSpanPredicates {
         }
 
         @Override
+        public TruePredicate copy() {
+            return this;
+        }
+
+        @Override
         public boolean equals(Object other) {
             return other instanceof TruePredicate;
         }
@@ -103,6 +108,13 @@ public class SymbolSpanPredicates {
             int result = super.hashCode();
             result = 31 * result + type.hashCode();
             return result;
+        }
+
+        @Override
+        public TypePredicate copy() {
+            TypePredicate copy = new TypePredicate(type);
+            copyTo(copy);
+            return copy;
         }
     }
 
@@ -310,6 +322,14 @@ public class SymbolSpanPredicates {
         public int hashCode() {
             return preds.hashCode();
         }
+
+        protected void copyTo(EmbeddedPredicates dest) {
+            for(SymbolSpanPredicate p : this.preds) {
+                dest.preds.add(p.copy());
+            }
+
+            dest.predIds = predIds;
+        }
     }
 
     /**
@@ -345,6 +365,13 @@ public class SymbolSpanPredicates {
             return o instanceof AndPredicate && super.equals(o);
         }
 
+        @Override
+        public AndPredicate copy() {
+            AndPredicate copy = new AndPredicate();
+            copyTo(copy);
+            return copy;
+        }
+
     }
 
     /**
@@ -376,6 +403,13 @@ public class SymbolSpanPredicates {
         @Override
         public boolean equals(Object o) {
             return o instanceof AndPredicate && super.equals(o);
+        }
+
+        @Override
+        public OrPredicate copy() {
+            OrPredicate copy = new OrPredicate();
+            copyTo(copy);
+            return copy;
         }
 
     }
@@ -427,6 +461,13 @@ public class SymbolSpanPredicates {
         public int hashCode() {
             return pred.hashCode();
         }
+
+        @Override
+        public NotPredicate copy() {
+            NotPredicate copy = new NotPredicate(pred.copy());
+            copy.predId = predId;
+            return copy;
+        }
     }
 
 
@@ -476,6 +517,7 @@ public class SymbolSpanPredicates {
         public int hashCode() {
             return pred.hashCode();
         }
+
     }
 
 
@@ -558,6 +600,13 @@ public class SymbolSpanPredicates {
         @Override
         public String toString() {
             return String.format("startsWith %s", pred);
+        }
+
+        @Override
+        public StartsWith copy() {
+            StartsWith copy = new StartsWith(annotationAccessor, pred.copy());
+            copy.predId = predId;
+            return copy;
         }
     }
 
@@ -643,6 +692,13 @@ public class SymbolSpanPredicates {
 		public String toString() {
 			return String.format("coextWith %s", pred);
 		}
+
+        @Override
+        public CoextensiveWith copy() {
+            CoextensiveWith copy = new CoextensiveWith(annotationAccessor, pred.copy());
+            copy.predId = predId;
+            return copy;
+        }
 	}
 
 
@@ -908,6 +964,14 @@ public class SymbolSpanPredicates {
         public int hashCode() {
             return Objects.hash(evaluator);
         }
+
+        @Override
+        public MemoizedValuePredicate copy() {
+            // TODO FIXME
+            MemoizedValuePredicate copy = new MemoizedValuePredicate(evaluator.copy());
+
+            return copy;
+        }
     }
 
 
@@ -1022,6 +1086,14 @@ public class SymbolSpanPredicates {
 		public String toString() {
 			return String.format("contains %s", pred);
 		}
+
+		@Override
+        public ContainsPredicate copy() {
+		    ContainsPredicate copy = new ContainsPredicate(annotationAccessor, pred.copy());
+		    copy.predId = predId;
+
+		    return copy;
+        }
 	}
 
 

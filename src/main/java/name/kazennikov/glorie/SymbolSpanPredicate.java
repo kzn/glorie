@@ -25,6 +25,10 @@ public interface SymbolSpanPredicate {
      */
     public int compile(Alphabet<SymbolSpanPredicate> predicates);
 
+    public default SymbolSpanPredicate copy() {
+        return this;
+    }
+
 
     /**
      * Rewriter for symbol span predicate
