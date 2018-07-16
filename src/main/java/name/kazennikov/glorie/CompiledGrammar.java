@@ -584,7 +584,7 @@ public class CompiledGrammar {
         // set generated rules back
 
 
-        for(int i = 0; i < actionGenerators.length; i++) {
+        for(int i = 0; i < postprocGenerators.length; i++) {
             if(postprocGenerators[i] != null) {
                 terminalPostproc[i] = postprocGenerators[i].generate();
             }
@@ -619,6 +619,7 @@ public class CompiledGrammar {
         copy.start = start;
         copy.lrStart = lrStart;
         copy.eof = eof;
+        copy.accessors = accessors;
 
 
         copy.actions = new CompiledRHSAction[actions.length];
@@ -643,7 +644,9 @@ public class CompiledGrammar {
         copy.evaluators = new SynthTerminalEvaluator[evaluators.length];
 
         for(int i = 0; i < evaluators.length; i++) {
-            copy.evaluators[i] = evaluators[i].copy();
+            if(evaluators[i] != null) {
+                copy.evaluators[i] = evaluators[i].copy();
+            }
         }
 
 
