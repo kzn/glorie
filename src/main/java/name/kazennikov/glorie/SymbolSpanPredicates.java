@@ -293,8 +293,10 @@ public class SymbolSpanPredicates {
 
         @Override
         public int compile(Alphabet<SymbolSpanPredicate> predicates) {
-            for(SymbolSpanPredicate pred : preds) {
-                predIds.add(pred.compile(predicates));
+            if(predIds.isEmpty()) {
+                for(SymbolSpanPredicate pred : preds) {
+                    predIds.add(pred.compile(predicates));
+                }
             }
 
             return predicates.get(this);
