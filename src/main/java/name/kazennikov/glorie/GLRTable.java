@@ -350,6 +350,17 @@ public class GLRTable {
 
     }
 
-
+    /**
+     * Copy table data
+     * @param dest destination
+     */
+    public void copy(GLRTable dest) {
+        dest.table = this.table;
+        dest.stateIndex = stateIndex;
+        dest.checkState = checkState;
+        dest.checkSyms = checkSyms;
+        dest.stateCount = stateCount;
+        dest.cells = cells;
+    }
 
 }
