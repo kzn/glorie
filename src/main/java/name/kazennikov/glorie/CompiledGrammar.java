@@ -610,7 +610,6 @@ public class CompiledGrammar {
         copy.ppCompiler = ppCompiler;
 
 
-        copy.evaluators = evaluators;
         copy.maxSynthSize = maxSynthSize; // maximum number of synth terminal by type
 
         copy.actionGenerators = actionGenerators;
@@ -634,6 +633,17 @@ public class CompiledGrammar {
             if(g != null) {
                 copy.terminalPostproc[i] = g.generate();
             }
+        }
+
+        copy.predicates = new ArrayList<>();
+        for(SymbolSpanPredicate p : predicates) {
+            copy.predicates.add(p.copy());
+        }
+
+        copy.evaluators = new SynthTerminalEvaluator[evaluators.length];
+
+        for(int i = 0; i < evaluators.length; i++) {
+            copy.evaluators[i] = evaluators[i].copy();
         }
 
 

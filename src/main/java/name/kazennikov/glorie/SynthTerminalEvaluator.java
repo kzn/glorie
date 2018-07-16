@@ -74,4 +74,20 @@ public class SynthTerminalEvaluator {
 
 		return s;
 	}
+
+	public SynthTerminalEvaluator copy() {
+	    SynthTerminalEvaluator copy = new SynthTerminalEvaluator(type);
+	    copy.typeId = typeId;
+
+	    copy.types.addAll(types);
+	    copy.typeIds.addAll(typeIds);
+	    copy.predIds.addAll(predIds);
+	    copy.accessors.addAll(accessors);
+
+	    for(SymbolSpanPredicate p : predicates) {
+	        copy.predicates.add(p.copy());
+        }
+
+        return copy;
+    }
 }
