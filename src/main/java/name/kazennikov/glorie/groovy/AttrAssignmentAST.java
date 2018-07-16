@@ -16,10 +16,14 @@ import java.util.List;
 
 /**
  * Transforms all assignments in method execute() from
+ *
  * a = b
+ *
  * to
+ *
  * target['a'] = b
- * if a isn't declared with type in this method. For example:
+ *
+ * if 'a' wasn't declared. For example:
  * String a = "foo"
  * a = "bar"
  * will be rewritten to:
