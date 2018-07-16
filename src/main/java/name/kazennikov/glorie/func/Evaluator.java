@@ -28,8 +28,16 @@ public class Evaluator {
 
 	// placeholder for target value
 	public final MemoizedValue f;
+	protected final MemoizedValue srcF;
+	protected List<FunctionRewriter> pre;
+	protected List<FunctionRewriter> post;
+
 
 	public Evaluator(List<FunctionRewriter> pre, List<FunctionRewriter> post, MemoizedValue f) {
+	    this.srcF = f;
+	    this.pre = pre;
+	    this.post = post;
+
 		if(pre != null) {
 			rewriters.addAll(pre);
 		}
@@ -45,8 +53,7 @@ public class Evaluator {
 	}
 
 	public Evaluator(Evaluator src) {
-	    this.rewriters = src.rewriters;
-	    this.f = minimize(rewrite(src.f.copy()));
+	    this(src.pre, src.post, src.srcF.copy());
     }
 
 	public Evaluator(MemoizedValue f) {
