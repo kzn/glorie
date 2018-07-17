@@ -18,7 +18,7 @@ import java.lang.invoke.MethodType;
 import java.util.*;
 
 /**
-* Compiled version of the @class Grammar
+* Compiled version of the {@link Grammar}
  *
  * Maps Symbol object to integers and finalize rules.
  * Optimized for generation of LR tables and parsing
