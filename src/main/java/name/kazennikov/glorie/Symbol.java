@@ -16,14 +16,28 @@ import java.util.List;
  * [Token: string == foo] is parsed into a symbol those id is "Token" and predicate is "string == foo"
  *
  * A symbol also contains a list of label associated with it.
+ * A symbol could be marked as root indicating that it is a root symbol in a production. A root usually
+ * means that the reduced non-terminal inherits all root properties.
  *
  */
 public class Symbol {
+    /**
+     * EPSILON symbol. Means that the input could be empty
+     */
+    public static final Symbol EPSILON = new Symbol("EPSILON", false);
+
+    /**
+     * EOF symbol. represents end of input
+     */
+    public static final Symbol EOF = new Symbol("EOF", false);
+
+
+
     public final String id;                                  // symbol id
     public final SymbolSpanPredicate pred;                   // additional constraints of the span
-    List<String> labels = new ArrayList<>();    // labels of the symbol
+    public List<String> labels = new ArrayList<>();          // labels of the symbol
     public final boolean nt;                                 // true, if the symbol is non-terminal
-    boolean root;                               // true, if symbol is the root of the grammar
+    public boolean root;                                     // true, if symbol is marked as root in RHS
 
 
     public Symbol(String id, boolean nt) {
@@ -56,17 +70,4 @@ public class Symbol {
 		
 		return Objects.equal(nt, o.nt) && Objects.equal(id, o.id);
 	}
-
-
-    /**
-     * EPSILON symbol. Means that the input could be empty
-     */
-	public static final Symbol EPSILON = new Symbol("EPSILON", false);
-
-    /**
-     * EOF symbol. represents end of input
-     */
-	public static final Symbol EOF = new Symbol("EOF", false);
-
-
 }
