@@ -507,6 +507,7 @@ public class Grammar {
 					dstSym.add(dest);
 					prods.add(new Production(p.parent, dest, Arrays.asList(s), true, null, null, 1.0, false));
 				}
+
 				Symbol dest = dstSym.get(index);
 				Symbol sym = new Symbol(dest.id, dest.nt, SymbolSpanPredicate.TRUE);
 				sym.labels.addAll(s.labels);
