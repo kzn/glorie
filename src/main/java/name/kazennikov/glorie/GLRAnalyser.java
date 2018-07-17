@@ -193,6 +193,8 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         g.rewrite(rangeRewriter);
 
         g.rewriteTopLevelSeq();
+        ReachabilityFilter reachabilityFilter = new ReachabilityFilter(g);
+        reachabilityFilter.filter();
         g.removeEpsilon();
         g.augmentGrammar();
 
