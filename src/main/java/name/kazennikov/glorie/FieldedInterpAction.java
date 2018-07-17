@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Anton Kazennikov
  */
-public abstract class FieldedSymbolNodePostProcessor implements SymbolNodePostProcessor {
+public abstract class FieldedInterpAction implements InterpAction {
 
 	protected Document doc;
 	protected AnnotationSet outputAS;

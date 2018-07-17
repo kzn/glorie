@@ -93,14 +93,14 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     }
 
     /**
-     * Post proc
+     * Interp
      */
-    public class PostProcVisitor extends GLORIEBaseVisitor<SymbolNodePostProcessor.Source> {
+    public class InterpVisitor extends GLORIEBaseVisitor<InterpAction.Source> {
 
         @Override
-        public SymbolNodePostProcessor.Source visitJavaCode(GLORIEParser.JavaCodeContext ctx) {
+        public InterpAction.Source visitJavaCode(GLORIEParser.JavaCodeContext ctx) {
             String source = parseSource(ctx);
-            return new SymbolNodePostProcessor.Source(source);
+            return new InterpAction.Source(source);
         }
 
     }
@@ -748,16 +748,16 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 			weight = Double.parseDouble(ctx.lhsWeight().Number().getText());
 		}
 
-        SymbolNodePostProcessor.Source ppSource = null;
-        PostProcVisitor ppVistor = new PostProcVisitor();
+        InterpAction.Source interpSource = null;
+        InterpVisitor interpVisitor = new InterpVisitor();
 
         if(ctx.postprocAction() != null) {
-            ppSource = ppVistor.visitPostprocAction(ctx.postprocAction());
+            interpSource = interpVisitor.visitPostprocAction(ctx.postprocAction());
         }
 
 		boolean greedy = ctx.getChild(0).getText().equals("!");
 
-        Production p = new Production(null, lhs, Arrays.asList(rhs), false, action, ppSource, weight, greedy);
+        Production p = new Production(null, lhs, Arrays.asList(rhs), false, action, interpSource, weight, greedy);
         p.sourceLine = ctx.getStart().getLine();
 
 

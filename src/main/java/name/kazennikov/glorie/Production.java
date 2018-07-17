@@ -3,7 +3,6 @@ package name.kazennikov.glorie;
 import java.util.*;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import gate.creole.ResourceInstantiationException;
 import gnu.trove.list.array.TIntArrayList;
 
@@ -45,7 +44,7 @@ public class Production {
     List<SymbolSpanPredicate> preds = new ArrayList<>(); // predicates to check
     TIntArrayList predIds = new TIntArrayList();         // predicate id's
     RHSAction action;                                    // action to execute on reduce GLR action
-    SymbolNodePostProcessor.Source postProcessor;               // symbol node post-processor
+    InterpAction.Source interp;                          // interp post-processor
 
     Production parent;                                   // parent production, set during rewriting, so a production could be traced to original rule
     int rootIndex;                                       // index of the root symbol
@@ -54,13 +53,13 @@ public class Production {
     int sourceLine = -1;                                 // source line number
 
 	
-	public Production(Production parent, Symbol lhs, List<? extends Symbol> rhs, boolean synth, RHSAction action, SymbolNodePostProcessor.Source postProcessor, double weight, boolean greedy) {
+	public Production(Production parent, Symbol lhs, List<? extends Symbol> rhs, boolean synth, RHSAction action, InterpAction.Source interp, double weight, boolean greedy) {
 		this.parent = parent;
         this.lhs = lhs;
 		this.rhs = rhs;
         this.synth = synth;
         this.action = action;
-        this.postProcessor = postProcessor;
+        this.interp = interp;
 		this.weight = weight;
 		this.greedy = greedy;
 
@@ -72,7 +71,7 @@ public class Production {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("synth", synth)
                 .add("lhs", lhs)
                 .add("rhs", rhs)

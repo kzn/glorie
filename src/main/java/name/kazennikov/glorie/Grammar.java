@@ -1,6 +1,6 @@
 package name.kazennikov.glorie;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import gate.jape.constraint.EqualPredicate;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
@@ -65,7 +65,7 @@ public class Grammar {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("start", start)
                 .add("input", input)
@@ -134,7 +134,7 @@ public class Grammar {
     public List<Production> generateEpsilonFree(Production p, Set<Symbol> eps, List<Symbol> buf, int pos, List<Production> out) {
         if(pos == p.rhs.size()) {
             if(!buf.isEmpty()) {
-                Production p1 = new Production(p, p.lhs, new ArrayList<>(buf), p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+                Production p1 = new Production(p, p.lhs, new ArrayList<>(buf), p.synth, p.action, p.interp, p.weight, p.greedy);
                 out.add(p1);
             }
             return out;
@@ -201,7 +201,7 @@ public class Grammar {
             if(p.rhs.size() == 1 && (p.rhs.get(0) instanceof SymbolGroup.Or)) {
                 Symbol s = p.rhs.get(0);
                 for(Symbol alt : ((SymbolGroup.Or) s).syms) {
-                    Production newP = new Production(p, p.lhs, Arrays.asList(alt), p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+                    Production newP = new Production(p, p.lhs, Arrays.asList(alt), p.synth, p.action, p.interp, p.weight, p.greedy);
                     prods.add(newP);
 
                 }
@@ -231,7 +231,7 @@ public class Grammar {
                     rhs.add(elem);
                 }
             }
-            Production newP = new Production(p, p.lhs, rhs, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+            Production newP = new Production(p, p.lhs, rhs, p.synth, p.action, p.interp, p.weight, p.greedy);
             prods.add(newP);
         }
 
@@ -292,7 +292,7 @@ public class Grammar {
                 index++;
             }
 
-            Production prod = new Production(p, p.lhs, syms, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+            Production prod = new Production(p, p.lhs, syms, p.synth, p.action, p.interp, p.weight, p.greedy);
             prod.rootIndex = p.rootIndex;
             prod.action = p.action;
             prod.predIds = predIds;
@@ -328,7 +328,7 @@ public class Grammar {
                     SymbolSpanPredicates.Equal ep1 = (SymbolSpanPredicates.Equal) p1;
                    SymbolSpanPredicates.Equal ep2 = (SymbolSpanPredicates.Equal) p2;
 
-                    if(Objects.equal(ep1.fa, ep2.fa) && !Objects.equal(ep1.value, ep2.value)) {
+                    if(Objects.equals(ep1.fa, ep2.fa) && !Objects.equals(ep1.value, ep2.value)) {
                         predInfos[i].alsoFalse.add(j);
                         predInfos[j].alsoFalse.add(i);
                     }
@@ -340,7 +340,7 @@ public class Grammar {
                     SymbolSpanPredicates.Equal ep1 = (SymbolSpanPredicates.Equal) ((SymbolSpanPredicates.NotPredicate) p1).pred;
                     SymbolSpanPredicates.Equal ep2 = (SymbolSpanPredicates.Equal) p2;
 
-                    if(Objects.equal(ep1.fa, ep2.fa) && !Objects.equal(ep1.value, ep2.value)) {
+                    if(Objects.equals(ep1.fa, ep2.fa) && !Objects.equals(ep1.value, ep2.value)) {
                         predInfos[i].converseFalse.add(j); // foo = a after all
                         predInfos[j].alsoTrue.add(i); // foo = b => foo != a
                     }
@@ -350,7 +350,7 @@ public class Grammar {
                     SymbolSpanPredicates.EqualIgnoreCase ep1 = (SymbolSpanPredicates.EqualIgnoreCase) p1;
                     SymbolSpanPredicates.EqualIgnoreCase ep2 = (SymbolSpanPredicates.EqualIgnoreCase) p2;
 
-                    if(Objects.equal(ep1.fa, ep2.fa) && !Objects.equal(ep1.value, ep2.value)) {
+                    if(Objects.equals(ep1.fa, ep2.fa) && !Objects.equals(ep1.value, ep2.value)) {
                         predInfos[i].alsoFalse.add(j);
                         predInfos[j].alsoFalse.add(i);
                     }
@@ -362,7 +362,7 @@ public class Grammar {
                     SymbolSpanPredicates.EqualIgnoreCase ep1 = (SymbolSpanPredicates.EqualIgnoreCase) ((SymbolSpanPredicates.NotPredicate) p1).pred;
                     SymbolSpanPredicates.EqualIgnoreCase ep2 = (SymbolSpanPredicates.EqualIgnoreCase) p2;
 
-                    if(Objects.equal(ep1.fa, ep2.fa) && !Objects.equal(ep1.value, ep2.value)) {
+                    if(Objects.equals(ep1.fa, ep2.fa) && !Objects.equals(ep1.value, ep2.value)) {
                         predInfos[i].converseFalse.add(j); // foo = a after all
                         predInfos[j].alsoTrue.add(i); // foo = b => foo != a
                     }
@@ -370,7 +370,7 @@ public class Grammar {
 
 
                 // foo, !foo
-                if(p1 instanceof SymbolSpanPredicates.NotPredicate && Objects.equal(p2, ((SymbolSpanPredicates.NotPredicate) p1).pred)) {
+                if(p1 instanceof SymbolSpanPredicates.NotPredicate && Objects.equals(p2, ((SymbolSpanPredicates.NotPredicate) p1).pred)) {
                     predInfos[i].alsoFalse.add(j);
                     predInfos[j].alsoFalse.add(i);
                 }
@@ -478,7 +478,7 @@ public class Grammar {
 			}
 
 			List<Symbol> rhs = new ArrayList<>();
-			Production newP = new Production(p.parent, p.lhs, rhs, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+			Production newP = new Production(p.parent, p.lhs, rhs, p.synth, p.action, p.interp, p.weight, p.greedy);
 
 			for(Symbol s : p.rhs) {
 				if(!s.nt) {
@@ -495,7 +495,7 @@ public class Grammar {
 				int index = 0;
 				while(index < srcSym.size()) {
 					Symbol src = srcSym.get(index);
-					if(src.equals(s) && Objects.equal(src.pred, s.pred)) {
+					if(src.equals(s) && Objects.equals(src.pred, s.pred)) {
 						break;
 					}
 					index++;

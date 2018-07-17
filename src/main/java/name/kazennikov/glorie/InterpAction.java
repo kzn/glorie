@@ -13,7 +13,7 @@ import java.util.Map;
  * The symbol may have several parses. All parses are processed. The process order
  * is undefined for now. (It will possibly change. E.g. for order in source file)
  */
-public interface SymbolNodePostProcessor {
+public interface InterpAction {
     final Logger logger = name.kazennikov.logger.Logger.getLogger();
 
     /**
@@ -44,11 +44,11 @@ public interface SymbolNodePostProcessor {
      * Post processor that enhances possible stack traces from rhs actions
      * RHS action code
      */
-    public static class Friendly implements SymbolNodePostProcessor {
-        SymbolNodePostProcessor pp;
+    public static class Friendly implements InterpAction {
+        InterpAction pp;
         SourceInfo sourceInfo;
 
-        public Friendly(SymbolNodePostProcessor pp, SourceInfo sourceInfo) {
+        public Friendly(InterpAction pp, SourceInfo sourceInfo) {
             this.pp = pp;
             this.sourceInfo = sourceInfo;
         }

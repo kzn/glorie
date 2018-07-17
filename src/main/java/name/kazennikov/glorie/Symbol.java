@@ -1,9 +1,8 @@
 package name.kazennikov.glorie;
 
-import com.google.common.base.Objects;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a symbol occurrence in the GLR Grammar rules.
@@ -59,7 +58,7 @@ public class Symbol {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id, nt);
+		return Objects.hash(id, nt);
 	}
 
 	@Override
@@ -68,6 +67,6 @@ public class Symbol {
 			return false;
 		Symbol o = (Symbol) obj;
 		
-		return Objects.equal(nt, o.nt) && Objects.equal(id, o.id);
+		return Objects.equals(nt, o.nt) && Objects.equals(id, o.id);
 	}
 }

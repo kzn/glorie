@@ -25,7 +25,7 @@ public class GroupRewriter implements ProductionRewriter {
 		List<Production> prods = new ArrayList<>();
 		List<Symbol> rhs = new ArrayList<>();
 
-        Production newP = new Production(p, p.lhs, rhs, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+        Production newP = new Production(p, p.lhs, rhs, p.synth, p.action, p.interp, p.weight, p.greedy);
 		prods.add(newP);
 		rewrite(p, g, p.rhs, rhs, prods);
 		return prods;

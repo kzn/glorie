@@ -79,7 +79,7 @@ public class TerminalRewriter implements ProductionRewriter {
 			}
 		}
 
-		Production prod = new Production(p, p.lhs, rhs, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+		Production prod = new Production(p, p.lhs, rhs, p.synth, p.action, p.interp, p.weight, p.greedy);
 		out.add(prod);
 
 		return out;

@@ -21,7 +21,7 @@ public class FlattenProductionRewriter implements ProductionRewriter {
         }
 
 
-        Production newP = new Production(p, p.lhs, out, p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+        Production newP = new Production(p, p.lhs, out, p.synth, p.action, p.interp, p.weight, p.greedy);
         return Arrays.asList(newP);
     }
 

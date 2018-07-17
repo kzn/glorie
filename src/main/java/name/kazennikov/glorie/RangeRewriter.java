@@ -51,11 +51,11 @@ public class RangeRewriter implements ProductionRewriter {
 				}
 
 
-				l.add(new Production(p, p.lhs, l1, p.synth, p.action, p.postProcessor, p.weight, p.greedy));
+				l.add(new Production(p, p.lhs, l1, p.synth, p.action, p.interp, p.weight, p.greedy));
 			}
 
 			if(r.max == Integer.MAX_VALUE) {
-				l.add(new Production(p, p.lhs, Arrays.asList(p.lhs, baseLHS), p.synth, p.action, p.postProcessor, p.weight, p.greedy));
+				l.add(new Production(p, p.lhs, Arrays.asList(p.lhs, baseLHS), p.synth, p.action, p.interp, p.weight, p.greedy));
 			} else {
 				for(int i = r.min + 1; i <= r.max; i++) {
 					List<Symbol> l1 = new ArrayList<>();
@@ -64,7 +64,7 @@ public class RangeRewriter implements ProductionRewriter {
 						l1.add(baseLHS);
 					}
 
-					l.add(new Production(p, p.lhs, l1, p.synth, p.action, p.postProcessor, p.weight, p.greedy));
+					l.add(new Production(p, p.lhs, l1, p.synth, p.action, p.interp, p.weight, p.greedy));
 				}
 			}
 			

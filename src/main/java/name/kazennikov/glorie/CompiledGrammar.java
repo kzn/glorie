@@ -72,7 +72,7 @@ public class CompiledGrammar {
     GroovyClassLoader groovyClassLoader;
 
     RHSActionCompiler compiler;
-    SymbolNodePostProcCompiler ppCompiler;
+    InterpCompiler interpCompiler;
 
 
     SynthTerminalEvaluator[] evaluators;
@@ -81,8 +81,8 @@ public class CompiledGrammar {
     RHSActionGenerator[] actionGenerators;
     CompiledRHSAction[] actions;
 
-    SymbolNodePostProcCompiler.Generator[] postprocGenerators;
-    SymbolNodePostProcessor[] terminalPostproc;
+    InterpCompiler.Generator[] interpGenerators;
+    InterpAction[] interp;
 
     List<List<Symbol>> prefixes;
     List<SymbolSpanPredicate> predicates;
@@ -119,13 +119,13 @@ public class CompiledGrammar {
      * @param g GLR grammar source
      * @param groovyClassLoader groovy class loader
      * @param rhsCompiler compiler of RHS actions
-     * @param ppCompiler compiler of post-processing actions
+     * @param interpCompiler compiler of post-processing actions
      */
-    public CompiledGrammar(Grammar g, GroovyClassLoader groovyClassLoader, RHSActionCompiler rhsCompiler, SymbolNodePostProcCompiler ppCompiler) throws Exception {
+    public CompiledGrammar(Grammar g, GroovyClassLoader groovyClassLoader, RHSActionCompiler rhsCompiler, InterpCompiler interpCompiler) throws Exception {
         this.grammar = g;
         this.groovyClassLoader = groovyClassLoader;
         this.compiler = rhsCompiler;
-        this.ppCompiler = ppCompiler;
+        this.interpCompiler = interpCompiler;
 
         rules = new Rule[g.productions.size()];
 
@@ -207,7 +207,7 @@ public class CompiledGrammar {
 
 
         compileGrammarActions();
-        compilePostProcActions();
+        compileInterp();
         buildPrefixTrie();
         optimizeSynth();
         computePolicies();
@@ -559,23 +559,22 @@ public class CompiledGrammar {
     }
 
     /**
-     * Compile grammar RHS actions
-     * @throws Exception
+     * Compile grammar interp actions
      */
-    public void compilePostProcActions() throws Exception {
-        terminalPostproc = new SymbolNodePostProcessor[grammar.productions.size()];
-        postprocGenerators = new SymbolNodePostProcCompiler.Generator[grammar.productions.size()];
+    public void compileInterp() throws Exception {
+        interp = new InterpAction[grammar.productions.size()];
+        interpGenerators = new InterpCompiler.Generator[grammar.productions.size()];
 
         for(int i = 0; i < grammar.productions.size(); i++) {
-            SymbolNodePostProcessor.Source src = grammar.productions.get(i).postProcessor;
+            InterpAction.Source src = grammar.productions.get(i).interp;
             if(src != null) {
-                postprocGenerators[i] = ppCompiler.add(grammar, rules[i], src);
+                interpGenerators[i] = interpCompiler.add(grammar, rules[i], src);
             }
         }
 
         // compile them
         try {
-            ppCompiler.compile();
+            interpCompiler.compile();
         } catch(Exception e) {
             logger.error("Error while compiling post processing actions for grammar %s", grammar.name, e);
             throw e;
@@ -584,9 +583,9 @@ public class CompiledGrammar {
         // set generated rules back
 
 
-        for(int i = 0; i < postprocGenerators.length; i++) {
-            if(postprocGenerators[i] != null) {
-                terminalPostproc[i] = postprocGenerators[i].generate();
+        for(int i = 0; i < interpGenerators.length; i++) {
+            if(interpGenerators[i] != null) {
+                interp[i] = interpGenerators[i].generate();
             }
         }
     }
@@ -606,13 +605,13 @@ public class CompiledGrammar {
         copy.groovyClassLoader = groovyClassLoader;
 
         copy.compiler = compiler;
-        copy.ppCompiler = ppCompiler;
+        copy.interpCompiler = interpCompiler;
 
 
         copy.maxSynthSize = maxSynthSize; // maximum number of synth terminal by type
 
         copy.actionGenerators = actionGenerators;
-        copy.postprocGenerators = postprocGenerators;
+        copy.interpGenerators = interpGenerators;
         copy.prefixes = prefixes;
         copy.prefixFSA = prefixFSA;
         copy.start = start;
@@ -627,11 +626,11 @@ public class CompiledGrammar {
             copy.actions[i] = g != null? g.generate() : CompiledRHSAction.SIMPLE;
         }
 
-        copy.terminalPostproc = new SymbolNodePostProcessor[terminalPostproc.length];
-        for(int i = 0; i < postprocGenerators.length; i++) {
-            SymbolNodePostProcCompiler.Generator g = postprocGenerators[i];
+        copy.interp = new InterpAction[interp.length];
+        for(int i = 0; i < interpGenerators.length; i++) {
+            InterpCompiler.Generator g = interpGenerators[i];
             if(g != null) {
-                copy.terminalPostproc[i] = g.generate();
+                copy.interp[i] = g.generate();
             }
         }
 

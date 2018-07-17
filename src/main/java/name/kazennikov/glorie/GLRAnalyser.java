@@ -185,7 +185,6 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         for(Production prod : g.productions) {
             prod.validateBindings();
         }
-        // TODO: check root index
 
         GroupRewriter groupRewriter = new GroupRewriter();
         RangeRewriter rangeRewriter = new RangeRewriter();
@@ -215,9 +214,9 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
 
         BasicRHSActionCompiler rhsCompiler = new BasicRHSActionCompiler(new GroovyCompiler(cc, classLoader));
-        SymbolNodePostProcCompiler ppCompiler = new SymbolNodePostProcCompiler(new GroovyCompiler(cc, classLoader));
+        InterpCompiler interpCompiler = new InterpCompiler(new GroovyCompiler(cc, classLoader));
 
-        return new CompiledGrammar(g, classLoader, rhsCompiler, ppCompiler);
+        return new CompiledGrammar(g, classLoader, rhsCompiler, interpCompiler);
     }
 
     @Override

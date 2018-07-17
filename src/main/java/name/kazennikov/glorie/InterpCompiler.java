@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Anton Kazennikov
  */
-public class SymbolNodePostProcCompiler {
+public class InterpCompiler {
 
 	public class Generator {
 		SourceInfo sourceInfo;
@@ -19,9 +19,9 @@ public class SymbolNodePostProcCompiler {
 			this.sourceInfo = sourceInfo;
 		}
 
-		public SymbolNodePostProcessor generate() throws Exception {
+		public InterpAction generate() throws Exception {
 			Class<?> c = compiler.getClass(sourceInfo.getClassName());
-			SymbolNodePostProcessor pp = (SymbolNodePostProcessor) c.newInstance();
+			InterpAction pp = (InterpAction) c.newInstance();
 			return pp;
 		}
 	}
@@ -43,11 +43,11 @@ public class SymbolNodePostProcCompiler {
 
 
 
-	public SymbolNodePostProcCompiler(Compiler compiler) {
+	public InterpCompiler(Compiler compiler) {
 		this.compiler = compiler;
 	}
 
-	public Generator add(Grammar g, CompiledGrammar.Rule rule, SymbolNodePostProcessor.Source src) throws Exception {
+	public Generator add(Grammar g, CompiledGrammar.Rule rule, InterpAction.Source src) throws Exception {
 
 
 		String className = className(rule.production.lhs.id, rule.id);
@@ -58,7 +58,7 @@ public class SymbolNodePostProcCompiler {
 		StringBuilder source = new StringBuilder();
 		source.append("package " + actionsDirName + ";\n");
 		source.append(CompiledGrammar.DEFAULT_IMPORTS + "\n" + (g.imports == null? "" : g.imports) + "\n");
-		source.append("class " + className + " extends " + FieldedSymbolNodePostProcessor.class.getName() + " {\n");
+		source.append("class " + className + " extends " + FieldedInterpAction.class.getName() + " {\n");
 
 
 		for(String block : g.codeBlocks) {

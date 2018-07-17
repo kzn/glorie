@@ -164,8 +164,8 @@ public abstract class PostBaseScript extends Script {
 
 
     /**
-     * Compute all symbol nodes that are descendants of a root
-     * @return a out[i] == 1 that respective symbol span is a descendant of a root
+     * Compute all symbol nodes that are descendants of a root.
+     * store output symbol nodes in symbolNodes
      */
     public void computeNodes() {
         BitSet status = new BitSet();
@@ -326,13 +326,13 @@ public abstract class PostBaseScript extends Script {
                 rhsAnns[i] = (Annotation) item.symbol.data;
             }
 
-            if(node.symbol.data != null && parse.rule.production.postProcessor != null) {
+            if(node.symbol.data != null && parse.rule.production.interp != null) {
                 Map<String, SymbolSpan> bindings = new HashMap<>();
                 Map<String, Annotation> bindingAnns = new HashMap<>();
                 extractBindings(parse.rule.production, rhs, bindings, bindingAnns);
                 Annotation a = (Annotation) node.symbol.data;
-                SymbolNodePostProcessor pp = table.g.terminalPostproc[parse.rule.id];
-                pp.apply(doc, outputAS, parse.rule, node, a, rhs, rhsAnns, bindings, bindingAnns);
+                InterpAction action = table.g.interp[parse.rule.id];
+                action.apply(doc, outputAS, parse.rule, node, a, rhs, rhsAnns, bindings, bindingAnns);
             }
         }
     }

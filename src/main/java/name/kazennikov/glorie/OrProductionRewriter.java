@@ -25,7 +25,7 @@ public class OrProductionRewriter implements ProductionRewriter {
 			List<Production> l = new ArrayList<>();
 			for(Symbol s : syms) {
 
-				Production newP = new Production(p, p.lhs, Arrays.asList(s), p.synth, p.action, p.postProcessor, p.weight, p.greedy);
+				Production newP = new Production(p, p.lhs, Arrays.asList(s), p.synth, p.action, p.interp, p.weight, p.greedy);
 				l.add(newP);
 			}
 			
