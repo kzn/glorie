@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Post grammar actions.
  *
- * Performs filtering and transformation of symbol nodes to the annotations in the target document
+ * Transforms output symbol nodes to the annotations in the output GATE document
  *
  */
 public abstract class PostBaseScript extends Script {

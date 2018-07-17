@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Base class for Pre Script.
- * A pre block can transform an input symbol sequence prior to grammar application
+ * A pre block transforms an input symbol sequence prior to actual grammar input
  */
 public abstract class PreBaseScript extends Script {
 
