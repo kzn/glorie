@@ -129,8 +129,6 @@ public class CompiledGrammar {
 
         rules = new Rule[g.productions.size()];
 
-        // TODO: copy predicates
-
         // compile all productions
         for(int prodId = 0; prodId < g.productions.size(); prodId++) {
             Production p = g.productions.get(prodId);
