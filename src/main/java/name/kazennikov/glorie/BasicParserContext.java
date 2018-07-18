@@ -360,7 +360,7 @@ public class BasicParserContext implements ParserContext {
 
 
             default:
-            return new SymbolSpanPredicates.SourceCodeSymbolSpanPredicate(feature);
+                return new SymbolSpanPredicates.SourceCodeSymbolSpanPredicate(feature);
         }
 	}
 
