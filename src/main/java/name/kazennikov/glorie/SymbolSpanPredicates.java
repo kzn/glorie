@@ -1202,6 +1202,34 @@ public class SymbolSpanPredicates {
         }
     }
 
+
+    /**
+     * For foo(SymbolSpan) evaluation
+     */
+    public static class MethodHandleSimpleName implements SymbolSpanPredicate {
+        MethodHandle mh;
+        String featureName;
+
+        public MethodHandleSimpleName(MethodHandle mh, String featureName) {
+            this.mh = mh;
+            this.featureName = featureName;
+        }
+
+        @Override
+        public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
+            try {
+                return mh.invoke(span, featureName) == Boolean.TRUE;
+            } catch(Throwable e) {
+                return false;
+            }
+        }
+
+        @Override
+        public int compile(Alphabet<SymbolSpanPredicate> predicates) {
+            throw new IllegalStateException("predicate is not compilable");
+        }
+    }
+
     /**
      * For foo(SymbolSpanPredicateEvaluator, SymbolSpan) evaluation
      */
@@ -1228,13 +1256,13 @@ public class SymbolSpanPredicates {
     }
 
     /**
-     * For foo(featureName, SymbolSpanPredicateEvaluator, SymbolSpan) evaluation
+     * For foo("foo", SymbolSpanPredicateEvaluator, SymbolSpan) evaluation
      */
-    public static class MethodHandleByName implements SymbolSpanPredicate {
+    public static class MethodHandleFullName implements SymbolSpanPredicate {
         String featureName;
         MethodHandle mh;
 
-        public MethodHandleByName(MethodHandle mh, String featureName) {
+        public MethodHandleFullName(MethodHandle mh, String featureName) {
             this.mh = mh;
             this.featureName = featureName;
         }
@@ -1242,7 +1270,7 @@ public class SymbolSpanPredicates {
         @Override
         public boolean match(SymbolSpanPredicateEvaluator eval, SymbolSpan span) {
             try {
-                return mh.invoke(featureName, eval, span) == Boolean.TRUE;
+                return mh.invoke(eval, span, featureName) == Boolean.TRUE;
             } catch(Throwable e) {
                 return false;
             }

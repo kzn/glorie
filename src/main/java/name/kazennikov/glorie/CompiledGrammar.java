@@ -757,6 +757,23 @@ public class CompiledGrammar {
                     }
                 }
 
+                // foo(SymbolSpan, "foo")
+                for(Class rt : returnTypes) {
+                    try {
+                        MethodType mt = MethodType.methodType(rt, SymbolSpan.class, String.class);
+                        MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
+                        mh = mh.bindTo(grammarCode);
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleSimpleName(mh, id));
+                        continue outer;
+                    } catch(NoSuchMethodException e) {
+                        // empty
+                    }
+
+                    catch(Exception e) {
+                        logger.error(e);
+                    }
+                }
+
                 // foo(SymbolSpanPredicateEvaluator, SymbolSpan)
                 for(Class rt : returnTypes) {
                     try {
@@ -772,13 +789,14 @@ public class CompiledGrammar {
                     }
                 }
 
-                // foo(featureName, SymbolSpanPredicateEvaluator, SymbolSpan)
+                // foo(SymbolSpanPredicateEvaluator, SymbolSpan, "foo")
+                // as previous, but with explicit method name
                 for(Class rt : returnTypes) {
                     try {
-                        MethodType mt = MethodType.methodType(rt, String.class, SymbolSpanPredicateEvaluator.class, SymbolSpan.class);
+                        MethodType mt = MethodType.methodType(rt, SymbolSpanPredicateEvaluator.class, SymbolSpan.class, String.class);
                         MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
                         mh = mh.bindTo(grammarCode);
-                        predicates.set(i, new SymbolSpanPredicates.MethodHandleByName(mh, id));
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleFullName(mh, id));
                         continue outer;
                     } catch(NoSuchMethodException e) {
                         // empty
