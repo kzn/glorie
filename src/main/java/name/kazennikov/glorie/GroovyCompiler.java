@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created on 14.12.15.
+ * Groovy compiler
  *
  * @author Anton Kazennikov
  */

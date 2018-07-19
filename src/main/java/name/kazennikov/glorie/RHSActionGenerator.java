@@ -10,8 +10,8 @@ public interface RHSActionGenerator {
 	/**
 	 * Returns compiled RHS action bounded with this generator.
      *
-     * If the generator is issued from the {@code RHSActionCompiler}
-     * then with method should be invoked *only* after the {@code RHSActionCompiler.compile()}
+     * If the generator is issued from the {@link RHSActionCompiler}
+     * then with method should be invoked *only* after the {@link RHSActionCompiler#compile()}
      * is called
 	 */
 	public CompiledRHSAction generate() throws Exception;

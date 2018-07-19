@@ -4,10 +4,11 @@ package name.kazennikov.glorie;
  * Compiler interface for RHS actions.
  *
  * The compiler is applied in two steps.
- * First, you need to add RHS action to the compiler. It returns an RHS generator that can generate
+ * First, RHS actions are added to the compiler. The compiler returns an RHS generator that generates
  * actual RHS code after the compilation.
  *
- * After all RHS actions are added, you can compile all RHS blocks
+ * After all RHS actions are added, you an invocation of compile() compile all RHS blocks
+ * and {@link RHSActionGenerator#generate()} could be called
  */
 public interface RHSActionCompiler {
 	/**
