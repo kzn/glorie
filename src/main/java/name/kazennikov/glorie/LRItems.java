@@ -65,7 +65,7 @@ public class LRItems {
     }
 
     public boolean isFinished(LRItem item) {
-        return g.rules[item.rule].rhs.length ==  item.dot;
+        return g.rules[item.rule].rhs.length == item.dot;
     }
 
     public int symbol(LRItem item) {
@@ -73,7 +73,12 @@ public class LRItems {
     }
 
 
-
+    /**
+     * Adds initial items for productions that result in symbol
+     * @param symbol LHS symbol (production result)
+     * @param items target itemset
+     * @return
+     */
     public Set<LRItem> addToItemSet(int symbol, Set<LRItem> items) {
         for(CompiledGrammar.Rule p : g.rules) {
             if(p.lhs == symbol) {
@@ -85,9 +90,14 @@ public class LRItems {
         return items;
     }
 
-    //this function closes an item set:
-    //if there is an item of the form A->v*Bw in an item set and  in the grammar there is a rule
-    //of form B->w' then  the item B->*w' should also be in the item set.
+    /**
+     * Close an item set.
+     * if there is an item of the form A->v*Bw in an item set and  in the grammar there is a rule
+     * of form B->w' then  the item B->*w' should also be in the item set.
+     * @param itemSet source itemset
+     *
+     * @return closed itemset
+     */
     public Set<LRItem> closeItemSet(Set<LRItem> itemSet) {
         int saveSize;
         Set<LRItem> set = new HashSet<>();
@@ -116,7 +126,7 @@ public class LRItems {
 
 
 
-    void compute() {
+    public void compute() {
         Set<LRItem> itemSet0 = new HashSet<>();
         addToItemSet(g.lrStart, itemSet0);
         closeItemSet(itemSet0);
