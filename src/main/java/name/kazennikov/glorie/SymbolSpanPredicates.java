@@ -1001,9 +1001,9 @@ public class SymbolSpanPredicates {
 
 
 	/**
-	 * Checks if given predicate contained
+	 * Checks if given predicate contains terminal-based symbol span
 	 */
-	public static class  ContainsPredicate  extends ContextPredicate {
+	public static class  ContainsPredicate extends ContextPredicate {
 
 		public ContainsPredicate(FeatureAccessor fa, SymbolSpanPredicate pred) {
 			super(fa, pred);
@@ -1099,6 +1099,9 @@ public class SymbolSpanPredicates {
 	}
 
 
+    /**
+     * Checks if feature is contained in symbol span and is not null
+     */
 	public static class NotNullFeaturePredicate implements SymbolSpanPredicate {
 
 		String feature;
@@ -1174,6 +1177,9 @@ public class SymbolSpanPredicates {
         }
     }
 
+    /**
+     * For foo(SymbolSpan) evaluation
+     */
     public static class MethodHandleSimple implements SymbolSpanPredicate {
         MethodHandle mh;
 
@@ -1196,6 +1202,9 @@ public class SymbolSpanPredicates {
         }
     }
 
+    /**
+     * For foo(SymbolSpanPredicateEvaluator, SymbolSpan) evaluation
+     */
     public static class MethodHandleFull implements SymbolSpanPredicate {
         MethodHandle mh;
 
@@ -1218,6 +1227,9 @@ public class SymbolSpanPredicates {
         }
     }
 
+    /**
+     * For foo(featureName, SymbolSpanPredicateEvaluator, SymbolSpan) evaluation
+     */
     public static class MethodHandleByName implements SymbolSpanPredicate {
         String featureName;
         MethodHandle mh;
