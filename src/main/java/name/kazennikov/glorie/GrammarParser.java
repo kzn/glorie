@@ -635,7 +635,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
 
         if(ctx.output() == null || ctx.output().isEmpty()) {
-            logger.info("Output Non-terminals not specified, using grammar root as output");
+            logger.info("Output Nonterminals not specified, using grammar root as output");
             grammar.output.add(ctx.start().get(0).ident().getText());
         } else {
             for(GLORIEParser.OutputContext outputContext : ctx.output()) {
@@ -651,8 +651,6 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             }
 
             grammar.start = new Symbol(ctx.start().get(0).ident().getText(), true);
-        } else {
-            throw new IllegalStateException("Grammar start not specified");
         }
 
         if(ctx.opts() != null && !ctx.opts().isEmpty()) {

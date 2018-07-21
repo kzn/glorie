@@ -176,6 +176,17 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
         ParseTree pt = parser.glr();
         Grammar g = p.visit(pt);
+
+        if(g.productions.isEmpty()) {
+            throw new IllegalStateException("Grammar '" + g.name + "' has no productions");
+        }
+
+        if(g.start == null) {
+            Symbol firstLHS = g.productions.get(0).lhs;
+            logger.info("Grammar root for '%s' not set. Using LHS of the first production '%s' as root", g.name, firstLHS.id);
+            g.start = firstLHS;
+        }
+
         FlattenProductionRewriter seq = new FlattenProductionRewriter();
         g.rewrite(seq);
         g.rewriteTopLevelOr();
