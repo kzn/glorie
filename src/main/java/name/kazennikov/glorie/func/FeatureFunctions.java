@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Definitions of default functions for GLR engine
+ * Default function definitions for GLORIE
  *
  * @author Anton Kazennikov
  */
@@ -18,7 +18,7 @@ public class FeatureFunctions {
 	public static final RootFunction ROOT = new RootFunction();
 
 	/**
-	 * Function to retrieve a value by feature name from 'features' field of a SymbolSpan.
+	 * Function that returns a value by feature name from 'features' field of a SymbolSpan.
 	 * The feature name is passed as function parameter:
 	 * f('name').
 	 *
@@ -39,6 +39,9 @@ public class FeatureFunctions {
 
 	}
 
+    /**
+     * Function on {@link SymbolSpanPredicate}
+     */
 	public static class SymbolSpanPredicateFunction implements PredicateEvaluatorInjectable, SymbolSpanInjectable {
 		SymbolSpanPredicate pred;
 
@@ -63,7 +66,7 @@ public class FeatureFunctions {
 
 
 	/**
-	 * Function to retrieve some predefined value from 'features' field of a SymbolSpan
+	 * Function that retrieves some predefined value from 'features' field of a SymbolSpan
 	 * The feature name is a part of the function definition:
 	 * f()
 	 *
@@ -102,7 +105,7 @@ public class FeatureFunctions {
 	}
 
 	/**
-	 * Function that returns the SymbolSpan itself
+	 * Function that returns the Symbol span itself
 	 */
 	public static class IdentitySpanSymbolFunction implements SymbolSpanInjectable {
 
@@ -118,7 +121,7 @@ public class FeatureFunctions {
 	}
 
 	/**
-	 * Function to get n-th root value from SymbolSpan.
+	 * Get n-th root value from SymbolSpan.
 	 * The order of the root is passed as a function argument
 	 */
 	public static class RootFunction implements SymbolSpanInjectable {
@@ -137,7 +140,7 @@ public class FeatureFunctions {
 	}
 
 	/**
-	 * Function for retrieve meta feature value from SymbolSpan
+	 * Retrieve meta feature value from SymbolSpan
 	 * The meta feature name is passed as function parameter.
 	 */
 	public static class MetaFeatureFunction implements PredicateEvaluatorInjectable, SymbolSpanInjectable {
@@ -157,7 +160,6 @@ public class FeatureFunctions {
 
 		@Override
 		public void eval(Value.Settable res, List<Value> args) {
-			//GLRParser.InputData inputData = args.get(0).get(GLRParser.InputData.class);
 			SymbolSpanPredicateEvaluator eval = args.get(0).get(SymbolSpanPredicateEvaluator.class);
 			SymbolSpan ss = args.get(1).get(SymbolSpan.class);
 			res.set(fa.get(eval, ss));

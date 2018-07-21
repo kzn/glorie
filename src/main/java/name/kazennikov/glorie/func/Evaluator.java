@@ -7,9 +7,9 @@ import name.kazennikov.glorie.SymbolSpanPredicateEvaluator;
 import java.util.*;
 
 /**
- * Dynamic function evaluator to retrieve computed value from given symbol span
+ * Dynamic function evaluator that retrieves computed value from given symbol span
  *
- * The Evaluator memoizes intermediate value for reducing computation time
+ * The Evaluator memoizes intermediate values for reducing computation time
  *
  * @author Anton Kazennikov
  */

@@ -5,13 +5,13 @@ import name.kazennikov.logger.Logger;
 import java.util.List;
 
 /**
- * Actual executable RHS action.
+ * Executable RHS action.
  * An RHS action is an check/action procedure.
  *
- * The check part determines that the reduce action of GLR grammar is valid
- * and could be applied.
+ * The check part determines if the reduce action of GLR grammar is valid
+ * and applicable.
  *
- * The action part is used to set relevant feature of the newly reduced symbol.
+ * The action part sets relevant features of the newly reduced symbol.
  *
  */
 public interface CompiledRHSAction {

@@ -26,6 +26,14 @@ public class GroovyExtensions {
         span.features.put(feature, value);
     }
 
+    public static Object getAt(gate.Annotation a, Object feature) {
+        return a.getFeatures().get(feature);
+    }
+
+    public static void putAt(gate.Annotation a, Object feature, Object value) {
+        a.getFeatures().put(feature, value);
+    }
+
 
     public static Object missingProperty(SymbolSpan span, String name) {
         return span.features.get(name);

@@ -129,8 +129,6 @@ public class CompiledGrammar {
 
         rules = new Rule[g.productions.size()];
 
-        // TODO: copy predicates
-
         // compile all productions
         for(int prodId = 0; prodId < g.productions.size(); prodId++) {
             Production p = g.productions.get(prodId);
@@ -727,6 +725,10 @@ public class CompiledGrammar {
      * Compile predicates specified directly in grammar code (in code blocks)
      */
     public void compileSourcePredicates() {
+
+        Class[] returnTypes = new Class[] {Object.class, boolean.class, Boolean.class};
+
+        outer:
         for(int i = 0; i < predicates.size(); i++) {
             SymbolSpanPredicate p = predicates.get(i);
 
@@ -739,38 +741,69 @@ public class CompiledGrammar {
                 MethodHandles.Lookup lookup = MethodHandles.lookup();
 
                 // foo(SymbolSpan)
-                try {
-                    MethodType mt = MethodType.methodType(Object.class, SymbolSpan.class);
-                    MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
-                    mh = mh.bindTo(grammarCode);
-                    predicates.set(i, new SymbolSpanPredicates.MethodHandleSimple(mh));
-                    continue;
-                } catch(Exception e) {
-                    logger.error(e);
+                for(Class rt : returnTypes) {
+                    try {
+                        MethodType mt = MethodType.methodType(rt, SymbolSpan.class);
+                        MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
+                        mh = mh.bindTo(grammarCode);
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleSimple(mh));
+                        continue outer;
+                    } catch(NoSuchMethodException e) {
+                        // empty
+                    }
+
+                    catch(Exception e) {
+                        logger.error(e);
+                    }
+                }
+
+                // foo(SymbolSpan, "foo")
+                for(Class rt : returnTypes) {
+                    try {
+                        MethodType mt = MethodType.methodType(rt, SymbolSpan.class, String.class);
+                        MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
+                        mh = mh.bindTo(grammarCode);
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleSimpleName(mh, id));
+                        continue outer;
+                    } catch(NoSuchMethodException e) {
+                        // empty
+                    }
+
+                    catch(Exception e) {
+                        logger.error(e);
+                    }
                 }
 
                 // foo(SymbolSpanPredicateEvaluator, SymbolSpan)
-                try {
-                    MethodType mt = MethodType.methodType(Object.class, SymbolSpanPredicateEvaluator.class, SymbolSpan.class);
-                    MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
-                    mh = mh.bindTo(grammarCode);
-                    predicates.set(i, new SymbolSpanPredicates.MethodHandleFull(mh));
-                    continue;
-                } catch(Exception e) {
-                    logger.error(e);
+                for(Class rt : returnTypes) {
+                    try {
+                        MethodType mt = MethodType.methodType(rt, SymbolSpanPredicateEvaluator.class, SymbolSpan.class);
+                        MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
+                        mh = mh.bindTo(grammarCode);
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleFull(mh));
+                        continue outer;
+                    } catch(NoSuchMethodException e) {
+                        // empty
+                    } catch(Exception e) {
+                        logger.error(e);
+                    }
                 }
 
-                // foo(featureName, SymbolSpanPredicateEvaluator, SymbolSpan)
-                try {
-                    MethodType mt = MethodType.methodType(Object.class, String.class, SymbolSpanPredicateEvaluator.class, SymbolSpan.class);
-                    MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
-                    mh = mh.bindTo(grammarCode);
-                    predicates.set(i, new SymbolSpanPredicates.MethodHandleByName(mh, id));
-                    continue;
-                } catch(Exception e) {
-                    logger.error(e);
+                // foo(SymbolSpanPredicateEvaluator, SymbolSpan, "foo")
+                // as previous, but with explicit method name
+                for(Class rt : returnTypes) {
+                    try {
+                        MethodType mt = MethodType.methodType(rt, SymbolSpanPredicateEvaluator.class, SymbolSpan.class, String.class);
+                        MethodHandle mh = lookup.findVirtual(grammarCode.getClass(), id, mt);
+                        mh = mh.bindTo(grammarCode);
+                        predicates.set(i, new SymbolSpanPredicates.MethodHandleFullName(mh, id));
+                        continue outer;
+                    } catch(NoSuchMethodException e) {
+                        // empty
+                    }catch(Exception e) {
+                        logger.error(e);
+                    }
                 }
-
 
                 // default case
                 predicates.set(i, new SymbolSpanPredicates.NotNullFeaturePredicate(id));
