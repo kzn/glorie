@@ -610,10 +610,6 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     public Grammar visitHeader(GLORIEParser.HeaderContext ctx) {
         grammar.name = ctx.name().ident().getText();
 
-        if(ctx.start() == null || ctx.start().isEmpty()) {
-            throw new IllegalStateException("Grammar start not specified");
-        }
-
         if(ctx.start().size() > 1) {
             throw new IllegalStateException("More than one grammar start specified");
         }
