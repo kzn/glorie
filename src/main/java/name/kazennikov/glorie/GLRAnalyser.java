@@ -187,6 +187,12 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
             g.start = firstLHS;
         }
 
+        if(g.output.isEmpty()) {
+            logger.info("Output Nonterminals not specified, using grammar root '%s' as output", g.start.id);
+            g.output.add(g.start.id);
+        }
+
+
         FlattenProductionRewriter seq = new FlattenProductionRewriter();
         g.rewrite(seq);
         g.rewriteTopLevelOr();
