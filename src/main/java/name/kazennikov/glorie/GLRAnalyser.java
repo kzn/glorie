@@ -51,7 +51,6 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
     protected List<String> globalExtensionClasses = new ArrayList<>();
     protected List<String> groovyClassPath;
 
-    protected String parserContextClassName;
 
     protected CompilerConfiguration cc;
     protected GroovyClassLoader classLoader;
@@ -62,16 +61,27 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
     public Resource init() throws ResourceInstantiationException {
         if(grammarFile == null)
             throw new ResourceInstantiationException("Grammar file not specified");
+
         try {
-            classLoader = initGroovyClassLoader();
-            parserContext = initParserContext();
+
+            String src = Files.toString(grammarFile, Charset.forName("UTF-8"));
+            ParseTree parseTree = parseAST(src);
+
+            ClassloaderBuilder clBuilder = new ClassloaderBuilder();
+            clBuilder.addClassPath(new File(grammarFile.getParent(), "groovy").getAbsolutePath());
+            clBuilder.visit(parseTree);
+            clBuilder.build();
+            cc = clBuilder.cc();
+            classLoader = clBuilder.classloader();
+
+            parserContext = initParserContext(parseTree);
 
             if(parserContext.astTransformation() != null) {
                 cc.addCompilationCustomizers(new SimpleASTCustomizer(parserContext.astTransformation()));
             }
 
 
-            grammar = parseGrammar();
+            grammar = parseGrammar(src, parseTree);
             table = new GLRTable(grammar);
             table.buildGLRTable();
 
@@ -87,9 +97,16 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         return this;
     }
 
-    private ParserContext initParserContext() throws Exception {
-        if(parserContext != null)
+    private ParserContext initParserContext(ParseTree pt) throws Exception {
+        if(parserContext != null) {
+            logger.info("Using predefined parser context: %s", parserContext.getClass().getName());
             return parserContext;
+        }
+
+        ParserContextClassNameVisitor cnVisitor = new ParserContextClassNameVisitor();
+
+        String parserContextClassName = cnVisitor.visit(pt);
+
 
         if(parserContextClassName == null || parserContextClassName.isEmpty()) {
             return new BasicParserContext();
@@ -165,16 +182,19 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         return classLoader;
     }
 
-    public CompiledGrammar parseGrammar() throws Exception {
-        String src = Files.toString(grammarFile, Charset.forName("UTF-8"));
+    public ParseTree parseAST(String src) throws Exception {
         ANTLRInputStream charStream = new ANTLRInputStream(src);
         GLORIELexer lexer = new GLORIELexer(charStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         GLORIEParser parser = new GLORIEParser(tokenStream);
+        return parser.glr();
+    }
+
+
+    public CompiledGrammar parseGrammar(String src, ParseTree pt) throws Exception {
 
         GrammarParser p = new GrammarParser(getGrammarURL(), parserContext, src);
 
-        ParseTree pt = parser.glr();
         Grammar g = p.visit(pt);
 
         if(g.productions.isEmpty()) {
@@ -376,14 +396,6 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         this.groovyClassPath = groovyClassPath;
     }
 
-    public String getParserContextClassName() {
-        return parserContextClassName;
-    }
-
-    public void setParserContextClassName(String parserContextClassName) {
-        this.parserContextClassName = parserContextClassName;
-    }
-
     @Override
     public void reInit() throws ResourceInstantiationException {
         parserContext = null;
@@ -399,7 +411,6 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         try {
             GLRAnalyser copy = new GLRAnalyser();
             copy.grammarFile = grammarFile;
-            copy.parserContextClassName = parserContextClassName;
             copy.globalExtensionClasses = globalExtensionClasses;
             copy.asName = asName;
             copy.groovyClassPath = groovyClassPath;
@@ -435,5 +446,22 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
                 }
             }
         });
+    }
+
+    public static class ParserContextClassNameVisitor extends GLORIEBaseVisitor<String> {
+
+        String className;
+
+        @Override
+        public String visitGlr(GLORIEParser.GlrContext ctx) {
+            super.visitGlr(ctx);
+            return className;
+        }
+
+        @Override
+        public String visitParserContext(GLORIEParser.ParserContextContext ctx) {
+            className = ctx.className().getText();
+            return className;
+        }
     }
 }

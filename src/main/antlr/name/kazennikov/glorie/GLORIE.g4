@@ -8,7 +8,7 @@ glr: header (production | macro | pre | post | code)+;
 
 ident: SIMPLE;
 
-header: name (input | output | opts |start | context | importBlock)*;
+header: name (input | output | opts |start | context | importBlock | parserContext | globalExtension | staticExtension | instanceExtension)*;
 name: 'Grammar:' ident;
 input: 'Input:' ident+;
 output: 'Output:' ident+;
@@ -20,6 +20,12 @@ context: 'Context:' ident; // TODO: возможно, изменить на се
 
 pre: 'Pre:'  (javaCode | className ';'?);
 post: 'Post:' (javaCode | className ';'?) ;
+
+parserContext: 'ParserContext:' className ';'?;
+globalExtension: 'GlobalExtension:' className ';'?;
+staticExtension: 'StaticExtension:' className ';'?;
+instanceExtension: 'InstanceExtension:' className ';'?;
+
 
 className: ident (('.' | '$') ident)*;
 

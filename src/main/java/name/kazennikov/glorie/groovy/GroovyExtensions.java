@@ -1,8 +1,10 @@
-package name.kazennikov.glorie;
+package name.kazennikov.glorie.groovy;
 
 
 import gate.LanguageAnalyser;
 import gate.creole.ExecutionException;
+import name.kazennikov.glorie.FieldedRHSAction;
+import name.kazennikov.glorie.SymbolSpan;
 
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class GroovyExtensions {
 
     public static String string(FieldedRHSAction self, int start, int end) {
         try {
-            return self.text.substring(start, end);
+            return self.getText().substring(start, end);
         } catch(Exception e) {
             return "";
         }

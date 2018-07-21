@@ -627,13 +627,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             }
         }
 
-
-
-
-        if(ctx.output() == null || ctx.output().isEmpty()) {
-            logger.info("Output Nonterminals not specified, using grammar root as output");
-            grammar.output.add(ctx.start().get(0).ident().getText());
-        } else {
+        if(ctx.output() != null && !ctx.output().isEmpty()) {
             for(GLORIEParser.OutputContext outputContext : ctx.output()) {
                 for(GLORIEParser.IdentContext identContext : outputContext.ident()) {
                     grammar.output.add(identContext.getText());
