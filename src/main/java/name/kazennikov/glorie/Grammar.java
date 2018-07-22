@@ -54,7 +54,7 @@ public class Grammar {
     int nextSynthTerminalId = 0;
 
     // alphabet of predicates, used to deduplicate the symbol span predicates
-    Alphabet<SymbolSpanPredicate> predicates = new Alphabet<>();
+    Alphabet<SymbolSpanPredicate> predicates = new Alphabet<>(0, -1);
     Map<String, SynthTerminalEvaluator> evaluators = new HashMap<>();
 
     WalkFSABoolean predFSA;
@@ -262,6 +262,7 @@ public class Grammar {
      */
     public void computeEvaluators() {
         List<Production> prods = new ArrayList<>();
+        int trueId = predicates.get(SymbolSpanPredicate.TRUE);
 
         for(Production p : productions) {
             // replace all terminals
@@ -279,7 +280,7 @@ public class Grammar {
                     }
 
                     syms.add(eval.map(this, s));
-                    predIds.add(1);
+                    predIds.add(trueId);
                     preds.add(SymbolSpanPredicate.TRUE);
                 } else {
                     syms.add(s);
@@ -306,7 +307,7 @@ public class Grammar {
     }
 
     public void computePredInfo() {
-        predInfos = new PredInfo[predicates.size() + 1];
+        predInfos = new PredInfo[predicates.size()];
         // initial fill
         for(int i = 0; i < predInfos.length; i++) {
             predInfos[i] = new PredInfo();
@@ -314,14 +315,14 @@ public class Grammar {
 
 
         for(int i = 0; i < predicates.size(); i++) {
-            SymbolSpanPredicate p1 = predicates.get(i + 1);
+            SymbolSpanPredicate p1 = predicates.get(i);
 
             for(int j = 0; j < predicates.size(); j++) {
 
                 if(i == j)
                     continue;
 
-                SymbolSpanPredicate p2 = predicates.get(j + 1);
+                SymbolSpanPredicate p2 = predicates.get(j);
 
                 // foo == a, foo == b
                 if(p1 instanceof SymbolSpanPredicates.Equal && p2 instanceof SymbolSpanPredicates.Equal) {
@@ -423,7 +424,7 @@ public class Grammar {
     public void computePredFSA() {
         BooleanFSABuilder builder = new BooleanFSABuilder();
         for(int i = 0; i < predicates.size(); i++) {
-            SymbolSpanPredicate pred = predicates.get(i + 1);
+            SymbolSpanPredicate pred = predicates.get(i);
             if(pred instanceof SymbolSpanPredicates.Equal) {
 
 
@@ -434,7 +435,7 @@ public class Grammar {
                 TIntArrayList l = new TIntArrayList();
                 l.add(faId);
                 l.add(objId);
-                l.add(i + 1); // predicate id
+                l.add(i); // predicate id
                 builder.add(l);
                 predInfos[i].fsa = true;
                 predInfos[i].fa = faId;

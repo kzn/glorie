@@ -36,7 +36,7 @@ public class SymbolSpanPredicateEvaluator {
 
 
     public int bitIndex(int predId, int spanId) {
-        return 2*(spanId * predicates.size() + (predId - 1));
+        return 2*(spanId * predicates.size() + predId);
     }
 
     public boolean eval(SymbolSpanPredicate pred, SymbolSpan span) {
@@ -50,7 +50,7 @@ public class SymbolSpanPredicateEvaluator {
         if(predicateCache.get(index))
             return predicateCache.get(index + 1);
 
-        Grammar.PredInfo pi = predInfos[predicateId - 1];
+        Grammar.PredInfo pi = predInfos[predicateId];
 
         if(pi.fsa) {
             FeatureAccessor fa = faAlphabet.get(pi.fa);
@@ -59,7 +59,7 @@ public class SymbolSpanPredicateEvaluator {
             if(o == null) {
                 // set all predicate with this equals to 'false'
                 for(int i = 0; i < pi.alsoFalse.size(); i++) {
-                    int converseIndex = bitIndex(pi.alsoFalse.get(i) + 1, span.id);
+                    int converseIndex = bitIndex(pi.alsoFalse.get(i), span.id);
                     predicateCache.set(converseIndex);
                     predicateCache.clear(converseIndex + 1);
                 }
@@ -71,7 +71,7 @@ public class SymbolSpanPredicateEvaluator {
             if(objId == 0) {
                 // set all predicate with this equals to 'false'
                 for(int i = 0; i < pi.alsoFalse.size(); i++) {
-                    int converseIndex = bitIndex(pi.alsoFalse.get(i) + 1, span.id);
+                    int converseIndex = bitIndex(pi.alsoFalse.get(i), span.id);
                     predicateCache.set(converseIndex);
                     predicateCache.clear(converseIndex + 1);
                 }
@@ -90,14 +90,14 @@ public class SymbolSpanPredicateEvaluator {
 
             for(int k = trStart; k < trEnd; k++) {
                 int predId = fsa.label(k);
-                setResult(predInfos[predId - 1], bitIndex(predId, span.id), span.id, true);
+                setResult(predInfos[predId], bitIndex(predId, span.id), span.id, true);
             }
 
             return predicateCache.get(index + 1);
         }
 
 
-        boolean value = predicates.get(predicateId - 1).match(this, span);
+        boolean value = eval(predicates.get(predicateId), span);
         setResult(pi, index, span.id, value);
         return value;
     }
@@ -110,13 +110,13 @@ public class SymbolSpanPredicateEvaluator {
         if(value) {
 
             for(int i = 0; i < pi.alsoFalse.size(); i++) {
-                int converseIndex = bitIndex(pi.alsoFalse.get(i) + 1, spanId);
+                int converseIndex = bitIndex(pi.alsoFalse.get(i), spanId);
                 predicateCache.set(converseIndex);
                 predicateCache.clear(converseIndex + 1);
             }
 
             for(int i = 0; i < pi.alsoTrue.size(); i++) {
-                int converseIndex = bitIndex(pi.alsoTrue.get(i) + 1, spanId);
+                int converseIndex = bitIndex(pi.alsoTrue.get(i), spanId);
                 predicateCache.set(converseIndex);
                 predicateCache.set(converseIndex + 1);
             }
@@ -124,13 +124,13 @@ public class SymbolSpanPredicateEvaluator {
 
         } else {
             for(int i = 0; i < pi.converseFalse.size(); i++) {
-                int converseIndex = bitIndex(pi.converseFalse.get(i) + 1, spanId);
+                int converseIndex = bitIndex(pi.converseFalse.get(i), spanId);
                 predicateCache.set(converseIndex);
                 predicateCache.clear(converseIndex + 1);
             }
 
             for(int i = 0; i < pi.converseTrue.size(); i++) {
-                int converseIndex = bitIndex(pi.converseTrue.get(i) + 1, spanId);
+                int converseIndex = bitIndex(pi.converseTrue.get(i), spanId);
                 predicateCache.set(converseIndex);
                 predicateCache.set(converseIndex + 1);
             }
