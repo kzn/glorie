@@ -30,7 +30,7 @@ public class SymbolSpanPredicateEvaluator {
         predInfos = grammar.grammar.predInfos;
         fsa = grammar.grammar.predFSA;
 
-        predicateCache = new BitSet(4 * input.size() * predicates.size());
+        predicateCache = new BitSet(2 * input.size() * predicates.size());
 
     }
 
