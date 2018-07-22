@@ -1,10 +1,10 @@
 package name.kazennikov.glorie;
 
-import java.util.*;
-
 import com.google.common.base.MoreObjects;
 import gate.creole.ResourceInstantiationException;
 import gnu.trove.list.array.TIntArrayList;
+
+import java.util.*;
 
 /**
  * Production of GLR Grammar
@@ -213,7 +213,8 @@ public class Production {
                     if(head instanceof SymbolGroup.Range) {
                         SymbolGroup.Range range = (SymbolGroup.Range) head;
                         if(range.max == Integer.MAX_VALUE) {
-                            throw new ResourceInstantiationException("Invalid label '" + label + "' in rule " + rootParent());
+                            Production parent = rootParent();
+                            throw new ResourceInstantiationException("Label '" + label + "' is defined in unbounded repeated group in rule " + parent.lhs.id + " at line " + parent.sourceLine);
                         }
                     }
                 }
