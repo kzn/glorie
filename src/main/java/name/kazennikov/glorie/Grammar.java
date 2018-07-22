@@ -58,8 +58,8 @@ public class Grammar {
     Map<String, SynthTerminalEvaluator> evaluators = new HashMap<>();
 
     WalkFSABoolean predFSA;
-    Alphabet<Object> objectAlphabet = new Alphabet<>();
-    Alphabet<FeatureAccessor> accessorAlphabet = new Alphabet<>();
+    Alphabet<Object> objectAlphabet = new Alphabet<>(0, -1);
+    Alphabet<FeatureAccessor> accessorAlphabet = new Alphabet<>(0, -1);
 
 
 

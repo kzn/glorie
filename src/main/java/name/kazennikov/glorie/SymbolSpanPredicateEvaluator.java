@@ -68,7 +68,7 @@ public class SymbolSpanPredicateEvaluator {
 
             int objId = objectAlphabet.get(o, false);
 
-            if(objId == 0) {
+            if(objId == objectAlphabet.missingIndex()) {
                 // set all predicate with this equals to 'false'
                 for(int i = 0; i < pi.alsoFalse.size(); i++) {
                     int converseIndex = bitIndex(pi.alsoFalse.get(i), span.id);
