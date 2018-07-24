@@ -41,8 +41,8 @@ public interface InterpAction {
     }
 
     /**
-     * Post processor that enhances possible stack traces from rhs actions
-     * RHS action code
+     * Post processor with enhanced stacktraces
+     * Interp action code
      */
     public static class Friendly implements InterpAction {
         InterpAction pp;

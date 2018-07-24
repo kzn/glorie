@@ -13,8 +13,8 @@ package name.kazennikov.glorie;
  *
  * @author Anton Kazennikov
  */
-public class GroovyRHSAttrAction extends GroovyRHSAction {
-	public GroovyRHSAttrAction(String block) {
+public class GroovyReduceAttrAction extends GroovyReduceAction {
+	public GroovyReduceAttrAction(String block) {
 		super(block);
 	}
 }

@@ -5,16 +5,15 @@ import name.kazennikov.logger.Logger;
 import java.util.List;
 
 /**
- * Executable RHS action.
- * An RHS action is an check/action procedure.
+ * Executable reduce action.
+ * An reduce action is an check/action procedure.
  *
- * The check part determines if the reduce action of GLR grammar is valid
- * and applicable.
+ * The check part determines if a reduction in GLR grammar is valid and applicable.
  *
  * The action part sets relevant features of the newly reduced symbol.
  *
  */
-public interface CompiledRHSAction {
+public interface CompiledReduceAction {
 	final Logger logger = Logger.getLogger();
 	public static final Simple SIMPLE = new Simple();
 
@@ -33,10 +32,10 @@ public interface CompiledRHSAction {
 
 
 	/**
-	 * Compiled RHS action that enhances stack trace if an exception is occurred during the action execution
+	 * Compiled reduce action with enhanced stack traces
 	 */
-	public static class Friendly implements CompiledRHSAction {
-		CompiledRHSAction action;
+	public static class Friendly implements CompiledReduceAction {
+		CompiledReduceAction action;
 		SourceInfo sourceInfo;
 
         /**
@@ -44,7 +43,7 @@ public interface CompiledRHSAction {
          * @param action wrapped action
          * @param sourceInfo source code info for stack trace enhancements
          */
-		public Friendly(CompiledRHSAction action, SourceInfo sourceInfo) {
+		public Friendly(CompiledReduceAction action, SourceInfo sourceInfo) {
 			this.action = action;
 			this.sourceInfo = sourceInfo;
 		}
@@ -55,17 +54,17 @@ public interface CompiledRHSAction {
 				return action.execute(text, docFeats, rule, target, rhs);
 			} catch(Exception e) {
 				sourceInfo.enhanceTheThrowable(e);
-				logger.error("RHS Action error", e);
+				logger.error("Reduce Action error", e);
 				throw e;
 			}
 		}
 	}
 
 	/**
-	 * Default RHS action.
-     * It copies all features from the root symbol of the RHS to to reduced (target) symbol
+	 * Default reduce action.
+     * Copy all features from the root symbol of the RHS to to reduced (target) symbol
 	 */
-	public static class Simple implements CompiledRHSAction {
+	public static class Simple implements CompiledReduceAction {
 
 		@Override
 		public boolean execute(String text, gate.FeatureMap docFeats, CompiledGrammar.Rule rule, SymbolSpan target, List<SymbolSpan> rhs) {

@@ -8,7 +8,7 @@ import java.io.File;
 /**
  * Implements groovy-compilation of RHS blocks
  */
-public class BasicRHSActionCompiler implements RHSActionCompiler {
+public class BasicReduceActionCompiler implements ReduceActionCompiler {
 	private static final Logger logger = Logger.getLogger();
 
 
@@ -21,19 +21,19 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 	static private String actionsDirName = "glractionclasses";
 
 
-	public BasicRHSActionCompiler(Compiler compiler) {
+	public BasicReduceActionCompiler(Compiler compiler) {
 		this.compiler = compiler;
 	}
 
 	@Override
-	public RHSActionGenerator add(Grammar g, CompiledGrammar.Rule rule, RHSAction action) {
+	public ReduceActionGenerator add(Grammar g, CompiledGrammar.Rule rule, ReduceAction action) {
 		try {
-			if(action instanceof GroovyRHSAttrAction) {
-				SourceInfo sourceInfo = addAttrAction(((GroovyRHSAction) action).block, g, rule);
-				return new NamedClassRHSGenerator(compiler, sourceInfo);
-			} else if(action instanceof GroovyRHSAction) {
-				SourceInfo sourceInfo = addAction(((GroovyRHSAction) action).block, g, rule);
-				return new NamedClassRHSGenerator(compiler, sourceInfo);
+			if(action instanceof GroovyReduceAttrAction) {
+				SourceInfo sourceInfo = addAttrAction(((GroovyReduceAction) action).block, g, rule);
+				return new NamedClassReduceGenerator(compiler, sourceInfo);
+			} else if(action instanceof GroovyReduceAction) {
+				SourceInfo sourceInfo = addAction(((GroovyReduceAction) action).block, g, rule);
+				return new NamedClassReduceGenerator(compiler, sourceInfo);
 			}
 		} catch(Exception e) {
 			logger.error(e);
@@ -47,7 +47,7 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 		try {
 			compiler.compile();
 		} catch(Exception e) {
-			logger.error("Couldn't compile rhs", e);
+			logger.error("Couldn't compile reduce actions", e);
 			throw e;
 		}
 	}
@@ -63,7 +63,7 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 		StringBuilder source = new StringBuilder();
 		source.append("package " + actionsDirName + ";\n");
 		source.append(CompiledGrammar.DEFAULT_IMPORTS + "\n" + (g.imports == null? "" : g.imports) + "\n");
-		source.append("class " + className + " extends " + FieldedRHSAction.class.getName() + " {\n");
+		source.append("class " + className + " extends " + FieldedReduceAction.class.getName() + " {\n");
 
 		for(String block : g.codeBlocks) {
 			source.append(sourceInfo.addBlock(source.toString(), block + "\n"));
@@ -107,7 +107,7 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 		StringBuilder source = new StringBuilder();
 		source.append("package " + actionsDirName + ";\n");
 		source.append(CompiledGrammar.DEFAULT_IMPORTS + "\n" + (g.imports == null? "" : g.imports) + "\n");
-		source.append("class " + className + " extends " + FieldedRHSAction.class.getName() + " {\n");
+		source.append("class " + className + " extends " + FieldedReduceAction.class.getName() + " {\n");
 
 		for(String block : g.codeBlocks) {
 			source.append(sourceInfo.addBlock(source.toString(), block + "\n"));
@@ -149,7 +149,7 @@ public class BasicRHSActionCompiler implements RHSActionCompiler {
 
 
 	public String className(String lhs, int ruleId) {
-		return "GroovyRHS_" + lhs + "_" + ruleId;
+		return "GroovyReduceAction_" + lhs + "_" + ruleId;
 	}
 
 }

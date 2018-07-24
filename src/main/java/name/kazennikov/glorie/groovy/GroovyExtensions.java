@@ -3,7 +3,7 @@ package name.kazennikov.glorie.groovy;
 
 import gate.LanguageAnalyser;
 import gate.creole.ExecutionException;
-import name.kazennikov.glorie.FieldedRHSAction;
+import name.kazennikov.glorie.FieldedReduceAction;
 import name.kazennikov.glorie.SymbolSpan;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class GroovyExtensions {
         span.features.put(name, value);
     }
 
-    public static String string(FieldedRHSAction self, SymbolSpan span) {
+    public static String string(FieldedReduceAction self, SymbolSpan span) {
         try {
             return string(self, span.start, span.end);
         } catch(Exception e) {
@@ -53,7 +53,7 @@ public class GroovyExtensions {
         }
     }
 
-    public static String string(FieldedRHSAction self, List<SymbolSpan> spans) {
+    public static String string(FieldedReduceAction self, List<SymbolSpan> spans) {
         if(spans.isEmpty())
             return "";
 
@@ -66,7 +66,7 @@ public class GroovyExtensions {
         }
     }
 
-    public static String string(FieldedRHSAction self, SymbolSpan... spans) {
+    public static String string(FieldedReduceAction self, SymbolSpan... spans) {
         if(spans.length == 0)
             return "";
 
@@ -80,7 +80,7 @@ public class GroovyExtensions {
         }
     }
 
-    public static String string(FieldedRHSAction self, int start, int end) {
+    public static String string(FieldedReduceAction self, int start, int end) {
         try {
             return self.getText().substring(start, end);
         } catch(Exception e) {

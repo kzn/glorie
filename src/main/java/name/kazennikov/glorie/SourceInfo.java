@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple class to store and use the mapping between Groovy RHS code and compiled class for error reporting.
+ * A simple class to store and use the mapping between grammar source and Groovy code for error reporting.
  * This is a slightly modified copy of {@link gate.jape.SourceInfo}
  */
 public class SourceInfo {

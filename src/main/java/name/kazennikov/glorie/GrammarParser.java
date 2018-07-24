@@ -53,30 +53,30 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
 
     /**
-     * RHS Action parser
+     * Reduce Action parser
      */
-    public class ActionVisitor extends GLORIEBaseVisitor<RHSAction> {
+    public class ReduceActionVisitor extends GLORIEBaseVisitor<ReduceAction> {
 
 
         @Override
-        public RHSAction visitJavaCode(GLORIEParser.JavaCodeContext ctx) {
+        public ReduceAction visitJavaCode(GLORIEParser.JavaCodeContext ctx) {
             String source = parseSource(ctx);
 
 			// changed to attr code
-            return new GroovyRHSAttrAction(source);
+            return new GroovyReduceAttrAction(source);
         }
 
 		@Override
-		public RHSAction visitGroovyCode(GLORIEParser.GroovyCodeContext ctx) {
+		public ReduceAction visitGroovyCode(GLORIEParser.GroovyCodeContext ctx) {
 			String source = parseSource(ctx.javaCode());
 
 			// ordinary groovy code
-			return new GroovyRHSAction(source);
+			return new GroovyReduceAction(source);
 		}
 
 		@Override
-        public RHSAction visitMacroRef(GLORIEParser.MacroRefContext ctx) {
-            RHSAction action = grammar.macros.get(ctx.ident().getText());
+        public ReduceAction visitMacroRef(GLORIEParser.MacroRefContext ctx) {
+            ReduceAction action = grammar.macros.get(ctx.ident().getText());
 
             if(action == null) {
                 logger.error("Referenced undefined macro at %s:%d, macro=%s", baseURL, ctx.start.getLine(), ctx.ident().getText());
@@ -86,9 +86,9 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         }
 
         @Override
-        public RHSAction visitAttrs(GLORIEParser.AttrsContext ctx) {
+        public ReduceAction visitAttrs(GLORIEParser.AttrsContext ctx) {
             String source = parseSource(ctx.javaCode());
-            return new GroovyRHSAttrAction(source);
+            return new GroovyReduceAttrAction(source);
         }
     }
 
@@ -722,9 +722,9 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         RHSVisitor rhsVisitor = new RHSVisitor();
         SymbolGroup rhs = (SymbolGroup) rhsVisitor.visitRhs(ctx.rhs());
 
-        ActionVisitor actionVisitor = new ActionVisitor();
+        ReduceActionVisitor actionVisitor = new ReduceActionVisitor();
 
-        RHSAction action = null;
+        ReduceAction action = null;
 
         if(ctx.action() != null) {
             action = actionVisitor.visitAction(ctx.action());
@@ -757,8 +757,8 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
     @Override
     public Grammar visitMacro(GLORIEParser.MacroContext ctx) {
         String name = ctx.ident().getText();
-        ActionVisitor visitor = new ActionVisitor();
-        RHSAction action = visitor.visitAction(ctx.action());
+        ReduceActionVisitor visitor = new ReduceActionVisitor();
+        ReduceAction action = visitor.visitAction(ctx.action());
 
         if(grammar.macros.containsKey(name)) {
             logger.info("Redefining macro %s at %s:%d", name, baseURL, ctx.start.getLine());

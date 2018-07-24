@@ -81,7 +81,7 @@ public class GroovyCompiler implements Compiler {
 
 			compiled = true;
 		} catch(Exception e) {
-			logger.error("Couldn't compile rhs", e);
+			logger.error("Couldn't compile reduce action", e);
 			throw e;
 		}
 	}

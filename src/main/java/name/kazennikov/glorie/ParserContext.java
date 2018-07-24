@@ -99,8 +99,8 @@ public interface ParserContext {
 	public SymbolSpanPredicate parseFeaturePredicate(String feature);
 
     /**
-     * Custom AST Transformation for groovy code compiled within GLR.
-     * Applies to: global grammar code, RHS actions, post-process RHS actions
+     * Custom AST Transformation for groovy code compiled within GLORIE.
+     * Applies to: grammar code blocks, reduce actions and interp actions
      *
      * @return ast transformation, or null in none defined
      */

@@ -5,9 +5,9 @@ import gate.FeatureMap;
 import java.util.List;
 
 /**
- * Basic class for RHS Actions for which action arguments are passed through object fields
+ * Basic class for reduce actions in which action arguments are passed through object fields
  */
-public abstract class FieldedRHSAction implements CompiledRHSAction {
+public abstract class FieldedReduceAction implements CompiledReduceAction {
 
     protected String text;
     protected FeatureMap docFeats;
@@ -64,7 +64,7 @@ public abstract class FieldedRHSAction implements CompiledRHSAction {
     }
 
     /**
-	 * Execute the action with arguments set in the object fields
+	 * Execute the action with arguments specified in the object fields
 	 * @return
 	 */
 	public abstract Object exec();

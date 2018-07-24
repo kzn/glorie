@@ -43,7 +43,7 @@ public class Production {
 
     List<SymbolSpanPredicate> preds = new ArrayList<>(); // predicates to check
     TIntArrayList predIds = new TIntArrayList();         // predicate id's
-    RHSAction action;                                    // action to execute on reduce GLR action
+    ReduceAction action;                                    // action to execute on reduce GLR action
     InterpAction.Source interp;                          // interp post-processor
 
     Production parent;                                   // parent production, set during rewriting, so a production could be traced to original rule
@@ -53,7 +53,7 @@ public class Production {
     int sourceLine = -1;                                 // source line number
 
 	
-	public Production(Production parent, Symbol lhs, List<? extends Symbol> rhs, boolean synth, RHSAction action, InterpAction.Source interp, double weight, boolean greedy) {
+	public Production(Production parent, Symbol lhs, List<? extends Symbol> rhs, boolean synth, ReduceAction action, InterpAction.Source interp, double weight, boolean greedy) {
 		this.parent = parent;
         this.lhs = lhs;
 		this.rhs = rhs;

@@ -1,16 +1,16 @@
 package name.kazennikov.glorie;
 
 /**
- * Class for Groovy code RHS action
+ * Class for Groovy code reduce action
  */
-public class GroovyRHSAction implements RHSAction {
+public class GroovyReduceAction implements ReduceAction {
 	String block;
 
 	/**
 	 * Create action from source code
 	 * @param block action source code
 	 */
-	public GroovyRHSAction(String block) {
+	public GroovyReduceAction(String block) {
 		this.block = block;
 	}
 }

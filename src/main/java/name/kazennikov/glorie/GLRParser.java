@@ -136,7 +136,7 @@ public class GLRParser {
 	int wordSymbolNodes; // number of symbol nodes built for current word
 
 
-    // reduction cache, minimizes of predicate checks and rhs action invocations
+    // reduction cache, minimizes of predicate checks and reduce action invocations
     // spanMaps[rule.id]: a map of TIntArrayList of SymbolSpan symbol ids to target SymbolSpan
 	Map[] spanMaps;
 
@@ -654,7 +654,7 @@ public class GLRParser {
 
     /**
      * Checks that the reduction could be performed. If all checks completed successfully,
-     * then execute an RHS action, assigned to the related grammar rule
+     * then execute a reduce action of the reduced production
      *
      * @param reduction reduction
      * @param path stack reducePath (consists of symbol nodes and prefixStates)

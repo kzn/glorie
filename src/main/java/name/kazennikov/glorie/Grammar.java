@@ -46,7 +46,7 @@ public class Grammar {
 	String preClassName;
 	String postClassName;
     List<String> codeBlocks = new ArrayList<>();        // list of code blocks
-    Map<String, RHSAction> macros = new HashMap<>();    // RHS macros
+    Map<String, ReduceAction> macros = new HashMap<>();    // RHS macros
     PredInfo[] predInfos;
 
 
@@ -464,7 +464,7 @@ public class Grammar {
 			if(p.rhs.size() == 1) {
 				prods.add(p);
 
-				// skip those with non-trivial RHS Action
+				// skip those with non-trivial reduce action
 				if(p.action == null) {
 					srcSym.add(p.rhs.get(0));
 					dstSym.add(p.lhs);

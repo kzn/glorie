@@ -52,7 +52,7 @@ public class CompiledGrammar {
     }
 
 
-    public static final String DEFAULT_IMPORTS = "import " + RHSAction.class.getName() + ";\n"
+    public static final String DEFAULT_IMPORTS = "import " + ReduceAction.class.getName() + ";\n"
             + "import " + SymbolSpan.class.getName() + ";\n"
             + "import " + GLRParser.class.getName() + ";\n"
             + "import " + CompiledGrammar.class.getName() + ";\n"
@@ -71,15 +71,15 @@ public class CompiledGrammar {
     Rule[] rules;
     GroovyClassLoader groovyClassLoader;
 
-    RHSActionCompiler compiler;
-    InterpCompiler interpCompiler;
+    ReduceActionCompiler compiler; // compiler for reduce actions
+    InterpCompiler interpCompiler; // compiler for interp actions
 
 
     SynthTerminalEvaluator[] evaluators;
     int maxSynthSize; // maximum number of synth terminal by type
 
-    RHSActionGenerator[] actionGenerators;
-    CompiledRHSAction[] actions;
+    ReduceActionGenerator[] actionGenerators;
+    CompiledReduceAction[] actions;
 
     InterpCompiler.Generator[] interpGenerators;
     InterpAction[] interp;
@@ -118,13 +118,13 @@ public class CompiledGrammar {
      * Creates compiled version of the grammar
      * @param g GLR grammar source
      * @param groovyClassLoader groovy class loader
-     * @param rhsCompiler compiler of RHS actions
+     * @param reduceActionCompiler compiler of reduce actions
      * @param interpCompiler compiler of post-processing actions
      */
-    public CompiledGrammar(Grammar g, GroovyClassLoader groovyClassLoader, RHSActionCompiler rhsCompiler, InterpCompiler interpCompiler) throws Exception {
+    public CompiledGrammar(Grammar g, GroovyClassLoader groovyClassLoader, ReduceActionCompiler reduceActionCompiler, InterpCompiler interpCompiler) throws Exception {
         this.grammar = g;
         this.groovyClassLoader = groovyClassLoader;
-        this.compiler = rhsCompiler;
+        this.compiler = reduceActionCompiler;
         this.interpCompiler = interpCompiler;
 
         rules = new Rule[g.productions.size()];
@@ -204,7 +204,9 @@ public class CompiledGrammar {
         logger.info("Max # evaluators for single type: %d", maxSynthSize);
 
 
-        compileGrammarActions();
+        compilePreScript();
+        compilePostScript();
+        compileReduceActions();
         compileInterp();
         buildPrefixTrie();
         optimizeSynth();
@@ -431,26 +433,36 @@ public class CompiledGrammar {
     }
 
     /**
-     * Compile grammar RHS actions
+     * Compile grammar reduce actions
      * @throws Exception
      */
-    public void compileGrammarActions() throws Exception {
-        // compile pre block
-        if(grammar.preSource != null) {
-            compilePre();
-        } else if(grammar.preClassName != null) {
-			try {
-				Class c = groovyClassLoader.loadClass(grammar.preClassName);
-				pre = (PreBaseScript) c.newInstance();
-			} catch(Exception e) {
-				logger.error(e);
-			}
-		}
+    public void compileReduceActions() throws Exception {
+        // gather all reduce actions from all rules
+        actionGenerators = new ReduceActionGenerator[grammar.productions.size()];
 
-		if(pre == null) {
-            pre = new PreBaseScript.Simple();
+        for(int i = 0; i < grammar.productions.size(); i++) {
+            actionGenerators[i] = compiler.add(grammar, rules[i], grammar.productions.get(i).action);
         }
 
+        // compile them
+        try {
+            compiler.compile();
+        } catch(Exception e) {
+            logger.error("Error while compiling code of grammar %s", grammar.name, e);
+            throw e;
+        }
+
+        // set generated rules back
+        actions = new CompiledReduceAction[grammar.productions.size()];
+
+        for(int i = 0; i < actionGenerators.length; i++) {
+            actions[i] = actionGenerators[i] != null? actionGenerators[i].generate() : CompiledReduceAction.SIMPLE;
+        }
+
+
+    }
+
+    private void compilePostScript() throws Exception {
         // compile post block
         if(grammar.postSource != null) {
             compilePost();
@@ -463,33 +475,27 @@ public class CompiledGrammar {
 			}
 		}
 
-		if(post == null) {
-            post = new PostBaseScript.Simple();
-        }
+        if(post == null) {
+post = new PostBaseScript.Simple();
+}
+    }
 
-        // gather all rhs actions from all rules
-        actionGenerators = new RHSActionGenerator[grammar.productions.size()];
+    private void compilePreScript() throws Exception {
+        // compile pre block
+        if(grammar.preSource != null) {
+            compilePre();
+        } else if(grammar.preClassName != null) {
+			try {
+				Class c = groovyClassLoader.loadClass(grammar.preClassName);
+				pre = (PreBaseScript) c.newInstance();
+			} catch(Exception e) {
+				logger.error(e);
+			}
+		}
 
-        for(int i = 0; i < grammar.productions.size(); i++) {
-            actionGenerators[i] = compiler.add(grammar, rules[i], grammar.productions.get(i).action);
-        }
-
-        // compile them
-        try {
-            compiler.compile();
-        } catch(Exception e) {
-            logger.error("Error while compiling RHS actions for grammar %s", grammar.name, e);
-            throw e;
-        }
-
-        // set generated rules back
-        actions = new CompiledRHSAction[grammar.productions.size()];
-
-        for(int i = 0; i < actionGenerators.length; i++) {
-            actions[i] = actionGenerators[i] != null? actionGenerators[i].generate() : CompiledRHSAction.SIMPLE;
-        }
-
-
+        if(pre == null) {
+pre = new PreBaseScript.Simple();
+}
     }
 
     /**
@@ -574,7 +580,7 @@ public class CompiledGrammar {
         try {
             interpCompiler.compile();
         } catch(Exception e) {
-            logger.error("Error while compiling post processing actions for grammar %s", grammar.name, e);
+            logger.error("Error while compiling interp actions for grammar %s", grammar.name, e);
             throw e;
         }
 
@@ -618,10 +624,10 @@ public class CompiledGrammar {
         copy.accessors = accessors;
 
 
-        copy.actions = new CompiledRHSAction[actions.length];
+        copy.actions = new CompiledReduceAction[actions.length];
         for(int i = 0; i < actionGenerators.length; i++) {
-            RHSActionGenerator g = actionGenerators[i];
-            copy.actions[i] = g != null? g.generate() : CompiledRHSAction.SIMPLE;
+            ReduceActionGenerator g = actionGenerators[i];
+            copy.actions[i] = g != null? g.generate() : CompiledReduceAction.SIMPLE;
         }
 
         copy.interp = new InterpAction[interp.length];

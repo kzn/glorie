@@ -250,10 +250,10 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
         g.computePredFSA();
 
 
-        BasicRHSActionCompiler rhsCompiler = new BasicRHSActionCompiler(new GroovyCompiler(cc, classLoader));
+        BasicReduceActionCompiler reduceActionCompiler = new BasicReduceActionCompiler(new GroovyCompiler(cc, classLoader));
         InterpCompiler interpCompiler = new InterpCompiler(new GroovyCompiler(cc, classLoader));
 
-        return new CompiledGrammar(g, classLoader, rhsCompiler, interpCompiler);
+        return new CompiledGrammar(g, classLoader, reduceActionCompiler, interpCompiler);
     }
 
     @Override
