@@ -177,19 +177,19 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         @Override
         public Value visitFeatureValue(GLORIEParser.FeatureValueContext ctx) {
             String featureName = ctx.ident().getText();
-            int rootCount = ctx.root() == null? 0 : ctx.root().size();
+            int headCount = ctx.head() == null? 0 : ctx.head().size();
 
             List<Value> args = new ArrayList<>();
             List<Value> rootArgs = new ArrayList<>();
 
 
-            if(rootCount > 0) {
-                rootArgs.add(new Values.Const(rootCount));
+            if(headCount > 0) {
+                rootArgs.add(new Values.Const(headCount));
             } else {
                 rootArgs.add(new MemoizedValue(FeatureFunctions.IDENTITY_SPAN_SYMBOL, new Values.Var(), new ArrayList<Value>()));
             }
 
-            args.add(new MemoizedValue(FeatureFunctions.ROOT, new Values.Var(), rootArgs));
+            args.add(new MemoizedValue(FeatureFunctions.HEAD, new Values.Var(), rootArgs));
 
             MemoizedValue v = new MemoizedValue(new FeatureFunctions.FeatureAccessorFunction(featureName), new Values.Var(), args);
 
@@ -199,18 +199,18 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         @Override
         public Value visitMetaFeatureValue(GLORIEParser.MetaFeatureValueContext ctx) {
             String featureName = ctx.ident().getText();
-            int rootCount = ctx.root() == null? 0 : ctx.root().size();
+            int headCount = ctx.head() == null? 0 : ctx.head().size();
 
             List<Value> args = new ArrayList<>();
             List<Value> rootArgs = new ArrayList<>();
 
-            if(rootCount > 0) {
-                rootArgs.add(new Values.Const(rootCount));
+            if(headCount > 0) {
+                rootArgs.add(new Values.Const(headCount));
             } else {
                 rootArgs.add(new MemoizedValue(FeatureFunctions.IDENTITY_SPAN_SYMBOL, new Values.Var(), new ArrayList<Value>()));
             }
 
-            args.add(new MemoizedValue(FeatureFunctions.ROOT, new Values.Var(), rootArgs));
+            args.add(new MemoizedValue(FeatureFunctions.HEAD, new Values.Var(), rootArgs));
 
             MemoizedValue v = new MemoizedValue(new FeatureFunctions.MetaFeatureFunction(parserContext, featureName), new Values.Var(), args);
 
@@ -286,7 +286,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
                 vv = (MemoizedValue) v;
                 // simple metafeature
                 if(vv.getFeature() instanceof FeatureFunctions.MetaFeatureFunction &&
-                        ((MemoizedValue) vv.arg(0)).getFeature() instanceof FeatureFunctions.RootFunction &&
+                        ((MemoizedValue) vv.arg(0)).getFeature() instanceof FeatureFunctions.HeadFunction &&
                         ((MemoizedValue) ((MemoizedValue) vv.arg(0)).arg(0)).getFeature() == FeatureFunctions.IDENTITY_SPAN_SYMBOL) {
                     FeatureAccessor fa = parserContext.getMetaFeatureAccessor(vv.getFeature().name().substring(1));
                     return parserContext.getFeaturePredicate(op, fa, o);
@@ -311,11 +311,11 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 			// feature (possibly with root)
 			if(ctx.accessor().simpleAccessor() != null && ctx.accessor().simpleAccessor().featureValue() != null) {
 				GLORIEParser.FeatureValueContext featureValueContext = ctx.accessor().simpleAccessor().featureValue();
-				int root = featureValueContext.root() != null? 0 : featureValueContext.root().size();
+				int head = featureValueContext.head() != null? 0 : featureValueContext.head().size();
 
 				SymbolSpanPredicate pred = parserContext.parseFeaturePredicate(featureValueContext.ident().getText());
 
-				if(root == 0) {
+				if(head == 0) {
 					return pred;
 				}
 
@@ -323,9 +323,9 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 				List<Value> rootArgs = new ArrayList<>();
 
 
-				rootArgs.add(new Values.Const(root));
+				rootArgs.add(new Values.Const(head));
 
-				args.add(new MemoizedValue(FeatureFunctions.ROOT, new Values.Var(), rootArgs));
+				args.add(new MemoizedValue(FeatureFunctions.HEAD, new Values.Var(), rootArgs));
 
 				MemoizedValue mv = new MemoizedValue(new FeatureFunctions.SymbolSpanPredicateFunction(pred), new Values.Var(), args);
 
@@ -350,9 +350,9 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         public SymbolSpanPredicate visitRecursiveSpec(GLORIEParser.RecursiveSpecContext ctx) {
             String op = ctx.op().getText();
             Symbol s = new RHSVisitor().visitSimpleMatcher(ctx.simpleMatcher());
-            int root = ctx.root() == null? 0 : ctx.root().size();
+            int head = ctx.head() == null? 0 : ctx.head().size();
 
-            FeatureAccessor fa = root == 0? new FeatureAccessor.Self() : new FeatureAccessor.HeadAnnotation(root);
+            FeatureAccessor fa = head == 0? new FeatureAccessor.Self() : new FeatureAccessor.HeadAnnotation(head);
 
             return parserContext.getContextPredicate(op, fa, s.pred);
         }
@@ -587,8 +587,8 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
 
             s.labels.add(label);
 
-            if(ctx.root() != null) {
-                s.root = true;
+            if(ctx.head() != null) {
+                s.head = true;
             }
             return s;
         }

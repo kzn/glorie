@@ -45,7 +45,7 @@ public class GroupRewriter implements ProductionRewriter {
                     productions.add(new Production(p, nt, Arrays.asList(ss), true, null, null, 1.0, false));
                 }
 				out = nt;
-                out.root = s.root;
+                out.head = s.head;
                 out.labels.addAll(s.labels);
 			} else if(s instanceof SymbolGroup.Range) {
 				SymbolGroup.Range r = new SymbolGroup.Range(((SymbolGroup.Range) s).min, ((SymbolGroup.Range) s).max);
@@ -53,7 +53,7 @@ public class GroupRewriter implements ProductionRewriter {
 				Symbol nt = g.makeSynthNT(p.lhs.id, p.sourceLine);
 				productions.add(new Production(p, nt, Arrays.asList((Symbol)r), true, null, null, 1.0, false));
 				out = nt;
-                out.root = s.root;
+                out.head = s.head;
                 out.labels.addAll(s.labels);
 			}
 

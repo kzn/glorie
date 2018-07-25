@@ -15,7 +15,7 @@ public class FeatureFunctions {
 
 	public static final SimpleFeatureFunction SIMPLE_FEATURE = new SimpleFeatureFunction();
 	public static final IdentitySpanSymbolFunction IDENTITY_SPAN_SYMBOL = new IdentitySpanSymbolFunction();
-	public static final RootFunction ROOT = new RootFunction();
+	public static final HeadFunction HEAD = new HeadFunction();
 
 	/**
 	 * Function that returns a value by feature name from 'features' field of a SymbolSpan.
@@ -121,14 +121,14 @@ public class FeatureFunctions {
 	}
 
 	/**
-	 * Get n-th root value from SymbolSpan.
+	 * Get head from SymbolSpan.
 	 * The order of the root is passed as a function argument
 	 */
-	public static class RootFunction implements SymbolSpanInjectable {
+	public static class HeadFunction implements SymbolSpanInjectable {
 
 		@Override
 		public String name() {
-			return "root";
+			return "head";
 		}
 
 		@Override

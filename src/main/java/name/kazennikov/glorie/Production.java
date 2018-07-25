@@ -213,7 +213,7 @@ public class Production {
                     if(head instanceof SymbolGroup.Range) {
                         SymbolGroup.Range range = (SymbolGroup.Range) head;
                         if(range.max == Integer.MAX_VALUE) {
-                            Production parent = rootParent();
+                            Production parent = sourceParent();
                             throw new ResourceInstantiationException("Label '" + label + "' is defined in unbounded repeated group in rule " + parent.lhs.id + " at line " + parent.sourceLine);
                         }
                     }
@@ -224,10 +224,9 @@ public class Production {
 
 
     /**
-     * Find the most distant parent, a source production of the pre-transformed grammar
-     * @return source production
+     * Find the source parent production, a production in the unmodified grammar source
      */
-    public Production rootParent() {
+    public Production sourceParent() {
         Production p = this;
 
         while(p.parent != null) {
@@ -238,13 +237,14 @@ public class Production {
     }
 
     /**
-     * Initialize the index of an RHS symbol that has a root mark on it.
-     * By default it is the last symbol of the production.
+     * Initialize the index of an RHS symbol that has a head mark on it.
+     * By default it is the first symbol of the production.
      */
-    public void findRootIndex() {
+    public void initHeadIndex() {
         rootIndex = 0;
+
         for(int i = 0; i < rhs.size(); i++) {
-            if(rhs.get(i).root) {
+            if(rhs.get(i).head) {
                 rootIndex = i;
                 break;
             }

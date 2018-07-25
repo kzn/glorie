@@ -15,7 +15,7 @@ import java.util.Objects;
  * [Token: string == foo] is parsed into a symbol those id is "Token" and predicate is "string == foo"
  *
  * A symbol also contains a list of label associated with it.
- * A symbol could be marked as root indicating that it is a root symbol in a production. A root usually
+ * A symbol could be marked as root indicating that it is a head symbol in a production. A head usually
  * means that the reduced non-terminal inherits all root properties.
  *
  */
@@ -36,7 +36,7 @@ public class Symbol {
     public final SymbolSpanPredicate pred;                   // additional constraints of the span
     public List<String> labels = new ArrayList<>();          // labels of the symbol
     public final boolean nt;                                 // true, if the symbol is non-terminal
-    public boolean root;                                     // true, if symbol is marked as root in RHS
+    public boolean head;                                     // true, if symbol is marked as head of production in RHS
 
 
     public Symbol(String id, boolean nt) {

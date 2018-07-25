@@ -203,7 +203,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
         if(g.start == null) {
             Symbol firstLHS = g.productions.get(0).lhs;
-            logger.info("Grammar root for '%s' not set. Using LHS of the first production '%s' as root", g.name, firstLHS.id);
+            logger.info("Grammar root for '%s' not set. Using LHS of the first production '%s' as head", g.name, firstLHS.id);
             g.start = firstLHS;
         }
 
@@ -239,7 +239,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 		g.transformPredicateNT();
         for(Production prod : g.productions) {
             prod.bindings(g);
-            prod.findRootIndex();
+            prod.initHeadIndex();
         }
 
 

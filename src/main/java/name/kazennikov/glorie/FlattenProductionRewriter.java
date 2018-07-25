@@ -39,13 +39,13 @@ public class FlattenProductionRewriter implements ProductionRewriter {
             }
             SymbolGroup.Simple sym = new SymbolGroup.Simple();
             sym.syms = out;
-            sym.root = s.root;
+            sym.head = s.head;
             sym.labels.addAll(s.labels);
 
             if(out.size() == 1) {
                 Symbol ss = out.get(0);
                 ss.labels.addAll(s.labels);
-                ss.root = sym.root;
+                ss.head = sym.head;
                 return ss;
             }
 
@@ -65,13 +65,13 @@ public class FlattenProductionRewriter implements ProductionRewriter {
             }
             SymbolGroup.Or sym = new SymbolGroup.Or();
             sym.syms = out;
-            sym.root = s.root;
+            sym.head = s.head;
             sym.labels.addAll(s.labels);
 
             if(out.size() == 1) {
                 Symbol ss = out.get(0);
                 ss.labels.addAll(sym.labels);
-                ss.root = sym.root;
+                ss.head = sym.head;
                 return ss;
             }
 

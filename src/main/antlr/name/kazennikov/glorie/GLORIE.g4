@@ -51,7 +51,7 @@ lhsWeight: '[' Number ']';
 //rhs: rhsElem+; // вариант для проcтого BNF
 rhs: rhsOrElem ('|' rhsOrElem)*;
 rhsOrElem: rhsElem+;
-rhsElem: root? rhsAtom modif? label?;
+rhsElem: head? rhsAtom modif? label?;
 
 rhsAtom: simpleMatcher  #simpleRHS
        | SIMPLE         #identRHS
@@ -73,8 +73,8 @@ annotSpec: neg? ident (':'  feature (',' feature)*)?;
 
 feature: neg? featureSpec;
 
-featureValue: root* ident;
-metaFeatureValue: root* '@' ident;
+featureValue: head* ident;
+metaFeatureValue: head* '@' ident;
 
 simpleAccessor: featureValue
               | metaFeatureValue
@@ -89,7 +89,7 @@ accessor: simpleAccessor
 
 featureSpec: accessor                    #booleanFeatureSpec
            | accessor op value           #simpleFeatureSpec
-           | root* op simpleMatcher      #recursiveSpec
+           | head* op simpleMatcher      #recursiveSpec
            ;
 
 
@@ -146,7 +146,7 @@ modif: '?'                              #optional
      ;
 label: ':' ident;
 
-root: '^';
+head: '^';
 
 
 javaCode: '{' (SIMPLE | Number | STRING | QSTRING | RESTRING | '(' | ')' | ',' | '.' | '<' | '>' | '[' | ']' | ':' | '=' | '==' | '!=' | '=~' | '==~' | '>' | '>=' | '<=' | '+' | '-' |'!' | '|' | '\'' | '&&' | '||' | ';' | '*' | '@' | '@@' | '?' | javaCode)* '}'
