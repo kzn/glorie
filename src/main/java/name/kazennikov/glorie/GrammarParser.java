@@ -352,6 +352,11 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             Symbol s = new RHSVisitor().visitSimpleMatcher(ctx.simpleMatcher());
             int head = ctx.head() == null? 0 : ctx.head().size();
 
+            if(!grammar.input.contains(s.id)) {
+                throw new IllegalStateException("Nonterminal '" + s.id +  "' used in a context predicate constraint at line "
+                        + ctx.getStart().getLine() + ". Nonterminals aren't allowed in context predicates");
+            }
+
             FeatureAccessor fa = head == 0? new FeatureAccessor.Self() : new FeatureAccessor.HeadAnnotation(head);
 
             return parserContext.getContextPredicate(op, fa, s.pred);
