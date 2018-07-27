@@ -16,7 +16,7 @@ opts: 'Options:' option (',' option)*;
 option: ident ('=' ident)?;
 start: 'Start:' ident;
 importBlock: 'Import:' javaCode;
-context: 'Context:' ident; // TODO: возможно, изменить на селектор
+context: 'Context:' ident; // maybe change to predicate selector?
 
 pre: 'Pre:'  (javaCode | className ';'?);
 post: 'Post:' (javaCode | className ';'?) ;
@@ -27,7 +27,7 @@ staticExtension: 'StaticExtension:' className ';'?;
 instanceExtension: 'InstanceExtension:' className ';'?;
 
 
-className: ident (('.' | '$') ident)*;
+className: ident (('.' | '$') ident)*; // java class name
 
 macro: 'Macro:' ident action;
 code: '@code' javaCode; // @code { code }
