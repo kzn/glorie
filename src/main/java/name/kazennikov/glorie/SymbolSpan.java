@@ -47,7 +47,7 @@ public class SymbolSpan {
     };
 
 
-    public final int symbol;        // symbol id in the GLR grammar
+    public final int symbol;        // grammar symbol id
     public final int start;         // start offset of the span
     public final int end;           // end offset of the span
 
@@ -55,7 +55,7 @@ public class SymbolSpan {
     public int id;                  // span id
     public FeatureMap features;     // span features
     public SymbolSpan head;         // span head
-    public Object data;             // attached data (not used at present)
+    public Object data;             // interp data (assigned at postprocessing)
 	public double weight;			// weight of the symbol span
 
 
