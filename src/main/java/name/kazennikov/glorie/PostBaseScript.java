@@ -4,6 +4,7 @@ import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
 import gate.creole.ExecutionException;
+import gate.util.InvalidOffsetException;
 import groovy.lang.Script;
 import name.kazennikov.glorie.filters.ListOverlapFilter;
 import name.kazennikov.glorie.filters.OverlapResolver;
@@ -277,16 +278,22 @@ public abstract class PostBaseScript extends Script {
 
                 SymbolSpan span = node.symbol;
 
-                if(table.g.grammar.useWeights) {
-                    span.features.put("@weight", span.weight);
-                }
-
-                Integer annId = outputAS.add((long) span.start, (long) span.end, span.type, span.features);
-				span.data = outputAS.get(annId);
+                convertSpan(span);
             }
         } catch(Exception e) {
             throw new ExecutionException(e);
         }
+    }
+
+    public gate.Annotation convertSpan(SymbolSpan span) throws InvalidOffsetException {
+        if(table.g.grammar.useWeights) {
+            span.features.put("@weight", span.weight);
+        }
+
+        Integer annId = outputAS.add((long) span.start, (long) span.end, span.type, span.features);
+        Annotation ann = outputAS.get(annId);
+        span.data = ann;
+        return ann;
     }
 
     /**
@@ -372,9 +379,7 @@ public abstract class PostBaseScript extends Script {
                 SymbolSpan span = symbolNode.symbol;
 
                 if(table.g.output[span.symbol] == 1 && span.data == null) {
-					span.features.put("@weight", span.weight);
-                    Integer id = outputAS.add((long) span.start, (long) span.end, span.type, span.features);
-                    span.data = outputAS.get(id);
+                    convertSpan(span);
                 }
             }
         } catch(Exception e) {

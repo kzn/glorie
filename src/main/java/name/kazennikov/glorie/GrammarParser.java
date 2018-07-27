@@ -119,17 +119,39 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
      * Options section parser
      */
     public class OptsVisitor extends GLORIEBaseVisitor<Map<String, String>> {
+        Grammar grammar;
+
+        public OptsVisitor(Grammar grammar) {
+            this.grammar = grammar;
+        }
 
         @Override
         public Map<String, String> visitOpts(GLORIEParser.OptsContext ctx) {
-            Map<String, String> options = new HashMap<>();
+            grammar.options = new HashMap<>();
             for(GLORIEParser.OptionContext optCtx : ctx.option()) {
                 String key = optCtx.ident(0).getText();
-                String value = optCtx.ident(1).getText();
-                options.put(key, value);
+                String value = null;
+
+                if(optCtx.ident().size() > 1) {
+                    value = optCtx.ident(1).getText();
+                }
+
+                grammar.options.put(key, value);
+
+                String lcKey = key.toLowerCase();
+                switch(lcKey) {
+                    case "disable_weights":
+                        grammar.useWeights = false;
+                        break;
+                    case "disable_greedy":
+                        grammar.useGreedy = false;
+                        break;
+                }
+
+
             }
 
-            return options;
+            return grammar.options;
         }
     }
 
@@ -652,7 +674,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             if(ctx.opts().size() > 1)
                 throw new IllegalStateException("Options specified more than once in the grammar");
 
-            grammar.options = new OptsVisitor().visitOpts(ctx.opts(0));
+            new OptsVisitor(grammar).visitOpts(ctx.opts(0));
         }
 
         if(ctx.context() != null && !ctx.context().isEmpty()) {
