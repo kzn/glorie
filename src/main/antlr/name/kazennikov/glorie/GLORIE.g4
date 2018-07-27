@@ -42,7 +42,7 @@ postprocAction: javaCode;
 
 groovyCode: ('@groovy' | '@java') javaCode;
 
-macroRef: '@@' ident;
+macroRef: '%' ident;
 
 attrs: ('@attrs' | '@attr') javaCode;
 
