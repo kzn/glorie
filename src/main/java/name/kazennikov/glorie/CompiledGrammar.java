@@ -210,7 +210,11 @@ public class CompiledGrammar {
         compileInterp();
         buildPrefixTrie();
         optimizeSynth();
-        computePolicies();
+
+        if(grammar.useGreedy) {
+            computePolicies();
+        }
+
         compileCode();
 
         eof = terminals.get("EOF");

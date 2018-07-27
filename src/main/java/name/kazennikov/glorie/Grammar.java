@@ -61,6 +61,9 @@ public class Grammar {
     Alphabet<Object> objectAlphabet = new Alphabet<>(0, -1);
     Alphabet<FeatureAccessor> accessorAlphabet = new Alphabet<>(0, -1);
 
+    boolean useWeights = true; // enable production weighting, if false then all nonterminal weights are 1.0 even if assigned in reduce actions
+    boolean useGreedy = true; // allow greedy productions
+
 
 
     @Override

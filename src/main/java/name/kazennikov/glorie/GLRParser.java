@@ -720,6 +720,10 @@ public class GLRParser {
 			}
 		}
 
+		if(!grammar.grammar.useWeights) {
+		    symbol.weight = 1.0;
+        }
+
 		reducerCacheMisses++;
 
 		spanMaps[reduction.rule.id].put(l, symbol);

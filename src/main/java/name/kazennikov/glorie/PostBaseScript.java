@@ -276,7 +276,11 @@ public abstract class PostBaseScript extends Script {
                     continue;
 
                 SymbolSpan span = node.symbol;
-				span.features.put("@weight", span.weight);
+
+                if(table.g.grammar.useWeights) {
+                    span.features.put("@weight", span.weight);
+                }
+
                 Integer annId = outputAS.add((long) span.start, (long) span.end, span.type, span.features);
 				span.data = outputAS.get(annId);
             }
