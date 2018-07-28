@@ -48,7 +48,7 @@ attrs: ('@attrs' | '@attr') javaCode;
 
 lhs: ident;
 lhsWeight: '[' Number ']';
-//rhs: rhsElem+; // вариант для проcтого BNF
+//rhs: rhsElem+; // for strict BNF without groups and * and +
 rhs: rhsOrElem ('|' rhsOrElem)*;
 rhsOrElem: rhsElem+;
 rhsElem: head? rhsAtom modif? label?;
