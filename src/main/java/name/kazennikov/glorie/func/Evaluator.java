@@ -1,6 +1,9 @@
 package name.kazennikov.glorie.func;
 
-import name.kazennikov.features.*;
+import name.kazennikov.features.FunctionRewriter;
+import name.kazennikov.features.MemoizedValue;
+import name.kazennikov.features.Value;
+import name.kazennikov.features.Values;
 import name.kazennikov.glorie.SymbolSpan;
 import name.kazennikov.glorie.SymbolSpanPredicateEvaluator;
 
@@ -17,8 +20,8 @@ public class Evaluator {
 	Values.Var symbolSpan = new Values.Var();
 	Values.Var predicateEvaluator = new Values.Var();
 
-	// values to clear before next evaluation
-	List<MemoizedValue> toClear = new ArrayList<>();
+	// cached intermediate values
+	List<MemoizedValue> cache = new ArrayList<>();
 
 	// set of functions, used for deduplication
 	Map<MemoizedValue, MemoizedValue> funSet = new HashMap<>();
@@ -28,13 +31,13 @@ public class Evaluator {
 
 	// placeholder for target value
 	public final MemoizedValue f;
-	protected final MemoizedValue srcF;
+	protected final MemoizedValue orig;
 	protected List<FunctionRewriter> pre;
 	protected List<FunctionRewriter> post;
 
 
 	public Evaluator(List<FunctionRewriter> pre, List<FunctionRewriter> post, MemoizedValue f) {
-	    this.srcF = f;
+	    this.orig = f;
 	    this.pre = pre;
 	    this.post = post;
 
@@ -53,7 +56,7 @@ public class Evaluator {
 	}
 
 	public Evaluator(Evaluator src) {
-	    this(src.pre, src.post, src.srcF.copy());
+	    this(src.pre, src.post, src.orig.copy());
     }
 
 	public Evaluator(MemoizedValue f) {
@@ -80,7 +83,7 @@ public class Evaluator {
 	 * Clear cached values for re-evaluation of the function graph
 	 */
 	public void clear() {
-		for(MemoizedValue v : toClear)
+		for(MemoizedValue v : cache)
 			v.clear();
 	}
 
@@ -102,8 +105,9 @@ public class Evaluator {
 			if(funSet.containsKey(v))
 				return funSet.get(v);
 
-			if(!toClear.contains(v))
-				toClear.add(v);
+			if(!cache.contains(v)) {
+                cache.add(v);
+            }
 
 			funSet.put(v, v);
 		}
