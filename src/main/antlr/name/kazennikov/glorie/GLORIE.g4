@@ -90,6 +90,7 @@ accessor: simpleAccessor
 
 featureSpec: accessor                    #booleanFeatureSpec
            | accessor op value           #simpleFeatureSpec
+           | accessor op setValue		 #setFeatureSpec
            | head* op simpleMatcher      #recursiveSpec
            ;
 
@@ -103,6 +104,7 @@ value: SIMPLE
      | number
      ;
 
+setValue: '{' value (',' value)* '}';
 
 
 simpleVal: value | featureValue | metaFeatureValue;
