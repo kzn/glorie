@@ -22,6 +22,7 @@ pre: 'Pre:'  (javaCode | className ';'?);
 post: 'Post:' (javaCode | className ';'?) ;
 
 parserContext: 'ParserContext:' className ';'?;
+// TODO: allow code there?
 globalExtension: 'GlobalExtension:' className ';'?;
 staticExtension: 'StaticExtension:' className ';'?;
 instanceExtension: 'InstanceExtension:' className ';'?;
