@@ -13,7 +13,7 @@ name: 'Grammar:' ident;
 input: 'Input:' ident+;
 output: 'Output:' ident+;
 opts: 'Options:' option (',' option)*;
-option: ident ('=' ident)?;
+option: ident ('=' (ident | number))?;
 start: 'Start:' ident;
 importBlock: 'Import:' javaCode;
 context: 'Context:' ident; // maybe change to predicate selector?
