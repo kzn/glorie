@@ -4,7 +4,7 @@ grammar GLORIE;
   package name.kazennikov.glorie;
 }
 
-glr: header (production | macro | pre | post | code)+;
+glr: header (production | macro | pre | post | code)+ EOF;
 
 ident: SIMPLE;
 
