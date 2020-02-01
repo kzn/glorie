@@ -1,7 +1,7 @@
 #Tutorial
 
 This tutorial assumes familiarity with the GATE architecture and ANNIE pipeline notations.
-If in doubt, please consult with the GATE introduction tutorial.
+If in doubt, please consult the GATE introduction tutorial.
 
 We will use date parsing problem as a running example through this tutorial
 
@@ -16,7 +16,7 @@ TODO
 * Production action
 * symbol predicate
 * Interp
-* production root
+* production head
 
 # GLORIE parsing algorithm
 1. Build a sequence of terminals. GLORIE uses GATE annotations as terminals instead of words in traditional grammars. 

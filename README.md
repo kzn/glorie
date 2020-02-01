@@ -1,8 +1,18 @@
 # Generalized LR for IE (GLORIE)
-GLoRIE is a rule engine for GATE framework. It is based on the GLR algorithm and designed 
+GLoRIE is a rule engine for [GATE framework](https://gate.ac.uk). It is based on the GLR parsing algorithm and designed 
 for Information Extraction tasks.
 
-GLORIE is heavily influenced by JAPE and complements it.
+GLORIE is heavily influenced by [JAPE](https://gate.ac.uk/sale/tao/splitch8.html) and [Yandex Tomita parser](https://github.com/yandex/tomita-parser).
+
+## Introduction
+The core of GATE is a concept of annotation. This concept distinguishes GATE from other NLP or text mining frameworks.
+An annotation is a contiguous span of text which has a type and some features on it.
+
+For example, a text "John Doe, CEO of Acme Corp, released a statement" could be annotated as 
+* John Doe = Person {name = "John", surname = "Doe"}
+* CEO = Title {}
+* Acme Corp = Org {name = "Acme Corp"}
+
 
 ## Motivation
 JAPE is an CPSL-based pattern rule engine. The heart of JAPE is the concept of patterns
@@ -27,15 +37,16 @@ JAPE is a powerful way to construct rules, however it has some important limitat
   are executed sequentially.
 * CPSL lacks a programmatical way to assign features of newly created annotations. JAPE mitigates
   this by allowing Java code as scripting language Right-hand side of the rule. 
-* Today Java doesn't seem a good choice as a scripting language, but there wasn't much choise when JAPE was designed.
+* Today Java doesn't seem a good choice as a scripting language, but there wasn't much choice when JAPE was designed.
 
 
-GLoRIE is inteded to overcome some of those drawbacks. It is based on GLR - a formalism that allows ambigous context-free grammars.
+GLoRIE is intended to overcome some of those drawbacks. It is based on GLR - a formalism that allows ambiguous context-free grammars.
 A rule in GLORIE is an grammar production that describes how to rewrite a sequence of terminals.
 
 Unlike classical grammars, GLoRIE allows attempts to construct a valid parse tree for each valid input position and allows partial parses.
 For example, the relevant part of grammar that constructs a Date annotation from the above example is:
 ```
+S -> Date
 Number -> [Token: kind == number]
 Month -> [Lookup: majorType == monthName]
 Date -> Number Month
@@ -44,7 +55,7 @@ Date -> Number Month
 
 
 ## GLoRIE Syntax
-GLoRIE grammars constists of three major sections:
+GLoRIE grammars consists of three major sections:
 * grammar prolog, which describes basic grammar properties such as grammar name, input and output annotation types, options, etc.
 * grammar preprocessing and postprocessing procedures. GLoRIE internally works with terminal and non-terminal entities. Preprocessing 
   procedure allow to write custom mapping functions that translates GATE annotations to terminals, and post-processing redefines how 
