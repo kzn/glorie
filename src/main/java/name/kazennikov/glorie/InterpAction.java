@@ -3,7 +3,7 @@ package name.kazennikov.glorie;
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
  * is undefined for now. (It will possibly change. E.g. for order in source file)
  */
 public interface InterpAction {
-    final Logger logger = name.kazennikov.logger.Logger.getLogger();
+    Logger logger = Logger.getLogger(InterpAction.class);
 
     /**
      * Post process symbol node

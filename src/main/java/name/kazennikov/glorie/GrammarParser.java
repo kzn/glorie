@@ -2,7 +2,7 @@ package name.kazennikov.glorie;
 
 import name.kazennikov.features.*;
 import name.kazennikov.glorie.func.FeatureFunctions;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.net.URL;
 import java.util.*;
@@ -16,7 +16,7 @@ import java.util.*;
  * - operators
  */
 public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(GrammarParser.class);
 
     Grammar grammar = new Grammar();
     URL baseURL;
@@ -79,7 +79,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
             ReduceAction action = grammar.macros.get(ctx.ident().getText());
 
             if(action == null) {
-                logger.error("Referenced undefined macro at %s:%d, macro=%s", baseURL, ctx.start.getLine(), ctx.ident().getText());
+                logger.error(String.format("Referenced undefined macro at %s:%d, macro=%s", baseURL, ctx.start.getLine(), ctx.ident().getText()));
             }
 
             return action;
@@ -788,7 +788,7 @@ public class GrammarParser extends  GLORIEBaseVisitor<Grammar> {
         ReduceAction action = visitor.visitAction(ctx.action());
 
         if(grammar.macros.containsKey(name)) {
-            logger.info("Redefining macro %s at %s:%d", name, baseURL, ctx.start.getLine());
+            logger.info(String.format("Redefining macro %s at %s:%d", name, baseURL, ctx.start.getLine()));
         }
 
         grammar.macros.put(name, action);

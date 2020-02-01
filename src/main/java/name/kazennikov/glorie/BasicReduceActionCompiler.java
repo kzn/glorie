@@ -1,7 +1,7 @@
 package name.kazennikov.glorie;
 
 import name.kazennikov.glorie.groovy.AttrAssignment;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import java.io.File;
  * Implements groovy-compilation of RHS blocks
  */
 public class BasicReduceActionCompiler implements ReduceActionCompiler {
-	private static final Logger logger = Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(BasicReduceActionCompiler.class);
 
 
 	Compiler compiler;

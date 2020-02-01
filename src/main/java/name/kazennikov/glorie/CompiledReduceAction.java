@@ -1,6 +1,6 @@
 package name.kazennikov.glorie;
 
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  *
  */
 public interface CompiledReduceAction {
-	final Logger logger = Logger.getLogger();
+	final Logger logger = Logger.getLogger(CompiledReduceAction.class);
 	public static final Simple SIMPLE = new Simple();
 
 	/**

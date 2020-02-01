@@ -4,7 +4,7 @@ import gnu.trove.iterator.TIntIterator;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.Set;
  * GLR Table. Built on top of SLR table algorithm
  */
 public class GLRTable {
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(GLRTable.class);
 
     public static class SLRCell {
         boolean shift;
@@ -137,13 +137,13 @@ public class GLRTable {
         buildTable();
 
 
-        logger.info("GLR table: %dx%d (total %d cells), %d non-empty, double array table: %d",
+        logger.info(String.format("GLR table: %dx%d (total %d cells), %d non-empty, double array table: %d",
                 items.itemSets.size(), g.symbols.size(),
                 items.itemSets.size() * g.symbols.size(),
                 cells.size(),
                 table.length
 
-                );
+                ));
 
 
         return true;
@@ -243,7 +243,7 @@ public class GLRTable {
         this.checkState = tableStates.toArray();
         this.checkSyms = tableSyms.toArray();
 
-        logger.info("Fitted table size: %d, cells: %d", table.size(), cells.size());
+        logger.info(String.format("Fitted table size: %d, cells: %d", table.size(), cells.size()));
     }
 
 

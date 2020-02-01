@@ -13,12 +13,12 @@ import gate.gui.ActionsPublisher;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 import name.kazennikov.glorie.groovy.*;
-import name.kazennikov.logger.Logger;
 import name.kazennikov.sort.BinarySearch;
 import name.kazennikov.sort.FixedIntComparator;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.m12n.SimpleExtensionModule;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * This class is essentially a wrapper over GLRParser.
  */
 public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDuplication, ActionsPublisher {
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(GLRAnalyser.class);
 
 
     protected CompiledGrammar grammar;
@@ -99,7 +99,7 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
     private ParserContext initParserContext(ParseTree pt) throws Exception {
         if(parserContext != null) {
-            logger.info("Using predefined parser context: %s", parserContext.getClass().getName());
+            logger.info(String.format("Using predefined parser context: %s", parserContext.getClass().getName()));
             return parserContext;
         }
 
@@ -203,12 +203,12 @@ public class GLRAnalyser extends AbstractLanguageAnalyser implements CustomDupli
 
         if(g.start == null) {
             Symbol firstLHS = g.productions.get(0).lhs;
-            logger.info("Grammar root for '%s' not set. Using LHS of the first production '%s' as head", g.name, firstLHS.id);
+            logger.info(String.format("Grammar root for '%s' not set. Using LHS of the first production '%s' as head", g.name, firstLHS.id));
             g.start = firstLHS;
         }
 
         if(g.output.isEmpty()) {
-            logger.info("Output Nonterminals not specified, using grammar root '%s' as output", g.start.id);
+            logger.info(String.format("Output Nonterminals not specified, using grammar root '%s' as output", g.start.id));
             g.output.add(g.start.id);
         }
 

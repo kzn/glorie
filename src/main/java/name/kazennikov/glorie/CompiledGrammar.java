@@ -10,7 +10,7 @@ import groovy.lang.GroovyClassLoader;
 import name.kazennikov.alphabet.Alphabet;
 import name.kazennikov.fsa.BooleanFSABuilder;
 import name.kazennikov.fsa.walk.WalkFSABoolean;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -25,7 +25,7 @@ import java.util.*;
  *
 */
 public class CompiledGrammar {
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(CompiledGrammar.class);
 
     /**
      * Compiled version of a production
@@ -198,10 +198,10 @@ public class CompiledGrammar {
 
         maxSynthSize++; // truth predicate should be also considered
 
-        logger.info("Grammar has %d productions with %d symbols (%d terminals)",
-                rules.length, symbols.size(), terminals.size());
-        logger.info("Using %d distinct type terminal evaluators", g.nextSynthTerminalId);
-        logger.info("Max # evaluators for single type: %d", maxSynthSize);
+        logger.info(String.format("Grammar has %d productions with %d symbols (%d terminals)",
+                rules.length, symbols.size(), terminals.size()));
+        logger.info(String.format("Using %d distinct type terminal evaluators", g.nextSynthTerminalId));
+        logger.info(String.format("Max # evaluators for single type: %d", maxSynthSize));
 
 
         compilePreScript();
@@ -245,8 +245,8 @@ public class CompiledGrammar {
         }
 
         prefixFSA = fsaBuilder.build();
-        logger.info("Prefix FSA: %d states for %d prefixes of length %d, built in %d ms",
-				fsaBuilder.size(), prefixes.size(), prefixLength, System.currentTimeMillis() - st);
+        logger.info(String.format("Prefix FSA: %d states for %d prefixes of length %d, built in %d ms",
+				fsaBuilder.size(), prefixes.size(), prefixLength, System.currentTimeMillis() - st));
     }
 
 
@@ -452,7 +452,7 @@ public class CompiledGrammar {
         try {
             compiler.compile();
         } catch(Exception e) {
-            logger.error("Error while compiling code of grammar %s", grammar.name, e);
+            logger.error(String.format("Error while compiling code of grammar %s", grammar.name), e);
             throw e;
         }
 
@@ -518,7 +518,7 @@ pre = new PreBaseScript.Simple();
             pre.sourceInfo = sourceInfo;
             pre.sourceInfo.setClassName(pre.getClass().getName());
         } catch(Exception e) {
-            logger.error("Error while compiling PRE block of grammar %s", grammar.name, e);
+            logger.error(String.format("Error while compiling PRE block of grammar %s", grammar.name), e);
             throw e;
         }
     }
@@ -540,7 +540,7 @@ pre = new PreBaseScript.Simple();
             post.sourceInfo = sourceInfo;
             post.sourceInfo.setClassName(post.getClass().getName());
         } catch(Exception e) {
-            logger.error("Error while compiling POST block of grammar %s", e, grammar.name);
+            logger.error(String.format("Error while compiling POST block of grammar %s", grammar.name), e);
             throw e;
         }
     }
@@ -561,7 +561,7 @@ pre = new PreBaseScript.Simple();
         try {
             grammarCode = groovyClassLoader.parseClass(src.toString(), grammar.name + "_code.groovy").newInstance();
         } catch(Exception e) {
-            logger.error("Error while compiling code blocks of grammar %s", e, grammar.name);
+            logger.error(String.format("Error while compiling code blocks of grammar %s", grammar.name), e);
             throw e;
         }
     }
@@ -584,7 +584,7 @@ pre = new PreBaseScript.Simple();
         try {
             interpCompiler.compile();
         } catch(Exception e) {
-            logger.error("Error while compiling interp actions for grammar %s", grammar.name, e);
+            logger.error(String.format("Error while compiling interp actions for grammar %s", grammar.name), e);
             throw e;
         }
 

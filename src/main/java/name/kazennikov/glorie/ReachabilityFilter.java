@@ -1,6 +1,6 @@
 package name.kazennikov.glorie;
 
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -12,7 +12,7 @@ import java.util.*;
  *
  */
 public class ReachabilityFilter {
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(ReachabilityFilter.class);
     Grammar g;
 
     public ReachabilityFilter(Grammar g) {
@@ -67,7 +67,7 @@ public class ReachabilityFilter {
 
         int filtered = g.productions.size() - l.size();
         if(filtered > 0) {
-            logger.info("Filtered %d unreachable productions", filtered);
+            logger.info(String.format("Filtered %d unreachable productions", filtered));
             g.productions = l;
         }
     }

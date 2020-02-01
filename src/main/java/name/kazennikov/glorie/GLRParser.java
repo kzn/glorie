@@ -2,7 +2,7 @@ package name.kazennikov.glorie;
 
 import gate.Document;
 import gnu.trove.list.array.TIntArrayList;
-import name.kazennikov.logger.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class GLRParser {
 
-    private static final Logger logger = Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(GLRParser.class);
 
     // invalid span object, used in spanMaps cache
     public static final SymbolSpan INVALID_SPAN = new SymbolSpan(-1, null, -1, 0, 0, null, null, 0.0);
@@ -572,7 +572,7 @@ public class GLRParser {
 		wordSymbolNodes++;
 
 		if(maxWordSymbolNodes > 0 && wordSymbolNodes >= maxWordSymbolNodes) {
-			logger.info("Max Symbol Node count reached for word reached");
+			logger.info(String.format("Max Symbol Node count (%d) reached for word reached", wordSymbolNodes));
 			pendingReductions.clear();
 			return false;
 		}
